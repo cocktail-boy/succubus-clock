@@ -3,9 +3,15 @@
 !AGENTS.md
 !async_seedance_anchor_variations_i2v.py
 !index.html
+!successful_variations.txt
 !variations/
 variations/*
 !variations/*.png
+!video_outputs_seedance_2_0/
+video_outputs_seedance_2_0/*
+!video_outputs_seedance_2_0/anchor_variations/
+video_outputs_seedance_2_0/anchor_variations/*
+!video_outputs_seedance_2_0/anchor_variations/*.mp4
 !succubus_anchor_01_4x4/
 succubus_anchor_01_4x4/*
 !succubus_anchor_01_4x4/anchor.png

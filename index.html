@@ -90,7 +90,8 @@
       border-color: #f4f1ea;
     }
 
-    img {
+    img,
+    video {
       display: block;
       width: 100%;
       max-width: 100%;
@@ -104,7 +105,14 @@
       <div class="clock" id="clock" aria-live="polite" tabindex="0"></div>
       <div class="countdown" id="countdown" aria-live="polite"></div>
     </div>
-    <img id="anchorImage" src="succubus_anchor_01_4x4/anchor.png" alt="Succubus anchor">
+    <video
+      id="anchorVideo"
+      poster="succubus_anchor_01_4x4/anchor.png"
+      aria-label="Succubus anchor transition"
+      muted
+      playsinline
+      preload="metadata"
+    ></video>
     <label class="command-line">
       <span>&gt;</span>
       <input id="commandInput" type="text" aria-label="Command line" autocomplete="off" spellcheck="false">
@@ -113,33 +121,32 @@
   <script>
     const clock = document.getElementById('clock');
     const countdown = document.getElementById('countdown');
-    const anchorImage = document.getElementById('anchorImage');
+    const anchorVideo = document.getElementById('anchorVideo');
     const commandInput = document.getElementById('commandInput');
     const anchorImageSrc = 'succubus_anchor_01_4x4/anchor.png';
-    const variationImages = [
-      'variations/img_0001.png',
-      'variations/img_0002.png',
-      'variations/img_0003.png',
-      'variations/img_0004.png',
-      'variations/img_0005.png',
-      'variations/img_0006.png',
-      'variations/img_0007.png',
-      'variations/img_0008.png',
-      'variations/img_0009.png',
-      'variations/img_0010.png',
-      'variations/img_0011.png',
-      'variations/img_0012.png',
-      'variations/img_0013.png',
-      'variations/img_0014.png',
-      'variations/img_0015.png',
-      'variations/img_0016.png',
-      'variations/img_0017.png',
-      'variations/img_0018.png'
+    const videoBasePath = 'video_outputs_seedance_2_0/anchor_variations';
+    const successfulVariations = [
+      'img_0001',
+      'img_0002',
+      'img_0003',
+      'img_0004',
+      'img_0005',
+      'img_0006',
+      'img_0007',
+      'img_0008',
+      'img_0010',
+      'img_0011',
+      'img_0015',
+      'img_0016'
     ];
+    const variationVideos = successfulVariations.map((variationId) => ({
+      id: variationId,
+      forward: `${videoBasePath}/${variationId}_anchor_to_variation_8s.mp4`,
+      reverse: `${videoBasePath}/${variationId}_variation_to_anchor_4s.mp4`
+    }));
     const updateEveryMs = 5000;
-    const variationDurationMs = 1000;
     let nextImageUpdateAt = Date.now() + updateEveryMs;
-    let variationTimeout;
+    let isPlayingVariation = false;
     const commands = [
       'clock',
       'date',
@@ -161,28 +168,48 @@
       });
     }
 
-    function randomVariationImage() {
-      const imageIndex = Math.floor(Math.random() * variationImages.length);
-      return variationImages[imageIndex];
+    function randomVariationVideo() {
+      const videoIndex = Math.floor(Math.random() * variationVideos.length);
+      return variationVideos[videoIndex];
     }
 
-    function showVariationImage() {
-      anchorImage.src = randomVariationImage();
-      nextImageUpdateAt = Date.now() + updateEveryMs;
+    function playVideo(src) {
+      return new Promise((resolve) => {
+        anchorVideo.onended = resolve;
+        anchorVideo.onerror = resolve;
+        anchorVideo.src = src;
+        anchorVideo.load();
+        anchorVideo.play().catch(resolve);
+      });
+    }
 
-      clearTimeout(variationTimeout);
-      variationTimeout = setTimeout(() => {
-        anchorImage.src = anchorImageSrc;
-      }, variationDurationMs);
+    async function showVariationVideo() {
+      if (isPlayingVariation) {
+        return;
+      }
+
+      isPlayingVariation = true;
+      const variationVideo = randomVariationVideo();
+
+      await playVideo(variationVideo.forward);
+      await playVideo(variationVideo.reverse);
+
+      anchorVideo.removeAttribute('src');
+      anchorVideo.poster = anchorImageSrc;
+      anchorVideo.load();
+      isPlayingVariation = false;
+      nextImageUpdateAt = Date.now() + updateEveryMs;
     }
 
     function updateCountdown() {
       const remainingMs = Math.max(0, nextImageUpdateAt - Date.now());
       const remainingSeconds = Math.ceil(remainingMs / 1000);
-      countdown.textContent = `Next image update in ${remainingSeconds}s`;
+      countdown.textContent = isPlayingVariation
+        ? 'Image transition in progress'
+        : `Next image update in ${remainingSeconds}s`;
 
-      if (remainingMs === 0) {
-        showVariationImage();
+      if (remainingMs === 0 && !isPlayingVariation) {
+        showVariationVideo();
       }
     }
 
