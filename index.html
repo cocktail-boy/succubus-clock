@@ -219,6 +219,10 @@
     setInterval(updateCountdown, 250);
     commandInput.focus();
 
+    if ('serviceWorker' in navigator) {
+      navigator.serviceWorker.register('sw.js');
+    }
+
     commandInput.addEventListener('keydown', (event) => {
       if (event.key !== 'Tab') {
         return;
