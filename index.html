@@ -44,6 +44,42 @@
       border-radius: 4px;
     }
 
+    .command-line {
+      position: absolute;
+      right: 16px;
+      bottom: 16px;
+      left: 16px;
+      z-index: 1;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      padding: 10px 12px;
+      border: 1px solid rgba(244, 241, 234, 0.4);
+      border-radius: 4px;
+      background: rgba(16, 16, 20, 0.78);
+      box-shadow: 0 4px 18px rgba(0, 0, 0, 0.45);
+      font-family: Consolas, "Courier New", monospace;
+    }
+
+    .command-line span {
+      color: #f4f1ea;
+      flex: 0 0 auto;
+    }
+
+    .command-line input {
+      width: 100%;
+      min-width: 0;
+      border: 0;
+      outline: 0;
+      background: transparent;
+      color: #f4f1ea;
+      font: inherit;
+    }
+
+    .command-line:focus-within {
+      border-color: #f4f1ea;
+    }
+
     img {
       display: block;
       width: 100%;
@@ -56,9 +92,21 @@
   <main class="image-stage">
     <div class="clock" id="clock" aria-live="polite" tabindex="0"></div>
     <img src="succubus_anchor_01_4x4/anchor.png" alt="Succubus anchor">
+    <label class="command-line">
+      <span>&gt;</span>
+      <input id="commandInput" type="text" aria-label="Command line" autocomplete="off" spellcheck="false">
+    </label>
   </main>
   <script>
     const clock = document.getElementById('clock');
+    const commandInput = document.getElementById('commandInput');
+    const commands = [
+      'clock',
+      'date',
+      'help',
+      'image',
+      'time'
+    ];
 
     function updateClock() {
       const now = new Date();
@@ -75,6 +123,25 @@
 
     updateClock();
     setInterval(updateClock, 1000);
+
+    commandInput.addEventListener('keydown', (event) => {
+      if (event.key !== 'Tab') {
+        return;
+      }
+
+      const value = commandInput.value;
+      const commandStart = value.search(/\S+$/);
+      const prefix = commandStart === -1 ? '' : value.slice(commandStart);
+      const match = commands.find((command) => command.startsWith(prefix.toLowerCase()));
+
+      if (!match || match === prefix) {
+        return;
+      }
+
+      event.preventDefault();
+      const leadingText = commandStart === -1 ? value : value.slice(0, commandStart);
+      commandInput.value = `${leadingText}${match}`;
+    });
   </script>
 </body>
 </html>
