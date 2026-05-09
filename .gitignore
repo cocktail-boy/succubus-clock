@@ -1,6 +1,7 @@
 *
 !.gitignore
 !AGENTS.md
+!async_seedance_anchor_variations_i2v.py
 !index.html
 !variations/
 variations/*
