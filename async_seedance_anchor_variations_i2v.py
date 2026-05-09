@@ -49,7 +49,7 @@ SEED: Optional[int] = None
 # Required by some agreements: stable ID per end customer. Also read from env FAL_END_USER_ID if unset here.
 END_USER_ID: Optional[str] = "cocktailboy"
 
-CONCURRENCY = 1
+CONCURRENCY = 20
 
 # After sorting by path, skip this many variation files (0 = from first).
 SKIP_FIRST = 0
@@ -161,6 +161,12 @@ async def process_variation(
     sem: asyncio.Semaphore,
 ) -> None:
     async with sem:
+        forward_out = OUTPUT_DIR / f"{variation_path.stem}_anchor_to_variation_{FORWARD_DURATION}s.mp4"
+        return_out = OUTPUT_DIR / f"{variation_path.stem}_variation_to_anchor_{RETURN_DURATION}s.mp4"
+        if forward_out.exists() and return_out.exists():
+            print(f"[{variation_path.name}] already done, skipping.")
+            return
+
         print(f"[{variation_path.name}] uploading variation...")
         variation_url = await fal_client.upload_file_async(str(variation_path))
 
@@ -169,14 +175,14 @@ async def process_variation(
             start_image_url=anchor_url,
             end_image_url=variation_url,
             duration=FORWARD_DURATION,
-            out_path=OUTPUT_DIR / f"{variation_path.stem}_anchor_to_variation_{FORWARD_DURATION}s.mp4",
+            out_path=forward_out,
         )
         await generate_video(
             label=f"{variation_path.stem} variation->anchor",
             start_image_url=variation_url,
             end_image_url=anchor_url,
             duration=RETURN_DURATION,
-            out_path=OUTPUT_DIR / f"{variation_path.stem}_variation_to_anchor_{RETURN_DURATION}s.mp4",
+            out_path=return_out,
         )
 
 
