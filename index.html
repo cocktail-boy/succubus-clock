@@ -38,6 +38,12 @@
       text-shadow: 0 2px 10px #000;
     }
 
+    .clock:focus-visible {
+      outline: 2px solid #f4f1ea;
+      outline-offset: 6px;
+      border-radius: 4px;
+    }
+
     img {
       display: block;
       width: 100%;
@@ -48,7 +54,7 @@
 </head>
 <body>
   <main class="image-stage">
-    <div class="clock" id="clock" aria-live="polite"></div>
+    <div class="clock" id="clock" aria-live="polite" tabindex="0"></div>
     <img src="succubus_anchor_01_4x4/anchor.png" alt="Succubus anchor">
   </main>
   <script>
