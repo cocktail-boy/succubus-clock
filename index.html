@@ -123,6 +123,7 @@
 
     updateClock();
     setInterval(updateClock, 1000);
+    commandInput.focus();
 
     commandInput.addEventListener('keydown', (event) => {
       if (event.key !== 'Tab') {
