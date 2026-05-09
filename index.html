@@ -1,0 +1,74 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Succubus Anchor</title>
+  <style>
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      min-height: 100vh;
+      display: grid;
+      place-items: center;
+      background: #101014;
+      color: #f4f1ea;
+      font-family: Arial, Helvetica, sans-serif;
+    }
+
+    .image-stage {
+      position: relative;
+      width: min(100vw, 100vh);
+      max-width: 100%;
+    }
+
+    .clock {
+      position: absolute;
+      top: 16px;
+      left: 50%;
+      z-index: 1;
+      width: calc(100% - 32px);
+      transform: translateX(-50%);
+      font-size: clamp(18px, 3vw, 32px);
+      line-height: 1.2;
+      text-align: center;
+      text-shadow: 0 2px 10px #000;
+    }
+
+    img {
+      display: block;
+      width: 100%;
+      max-width: 100%;
+      height: auto;
+    }
+  </style>
+</head>
+<body>
+  <main class="image-stage">
+    <div class="clock" id="clock" aria-live="polite"></div>
+    <img src="succubus_anchor_01_4x4/anchor.png" alt="Succubus anchor">
+  </main>
+  <script>
+    const clock = document.getElementById('clock');
+
+    function updateClock() {
+      const now = new Date();
+      clock.textContent = now.toLocaleString(undefined, {
+        weekday: 'long',
+        year: 'numeric',
+        month: 'long',
+        day: 'numeric',
+        hour: 'numeric',
+        minute: '2-digit',
+        second: '2-digit'
+      });
+    }
+
+    updateClock();
+    setInterval(updateClock, 1000);
+  </script>
+</body>
+</html>

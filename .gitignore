@@ -1,0 +1,6 @@
+*
+!.gitignore
+!index.html
+!succubus_anchor_01_4x4/
+succubus_anchor_01_4x4/*
+!succubus_anchor_01_4x4/anchor.png
