@@ -147,6 +147,8 @@
     const updateEveryMs = 5000;
     let nextImageUpdateAt = Date.now() + updateEveryMs;
     let isPlayingVariation = false;
+    let nextVariationIndex = 0;
+    const prefetchedVideos = new Set();
     const commands = [
       'clock',
       'date',
@@ -168,9 +170,30 @@
       });
     }
 
-    function randomVariationVideo() {
-      const videoIndex = Math.floor(Math.random() * variationVideos.length);
-      return variationVideos[videoIndex];
+    function nextVariationVideo() {
+      const variationVideo = variationVideos[nextVariationIndex];
+      nextVariationIndex = (nextVariationIndex + 1) % variationVideos.length;
+      return variationVideo;
+    }
+
+    function prefetchVideo(src) {
+      if (prefetchedVideos.has(src)) {
+        return;
+      }
+
+      prefetchedVideos.add(src);
+      fetch(src).catch(() => {
+        prefetchedVideos.delete(src);
+      });
+    }
+
+    function prefetchVariationVideo(variationVideo) {
+      prefetchVideo(variationVideo.forward);
+      prefetchVideo(variationVideo.reverse);
+    }
+
+    function prefetchNextVariationVideo() {
+      prefetchVariationVideo(variationVideos[nextVariationIndex]);
     }
 
     function playVideo(src) {
@@ -189,7 +212,8 @@
       }
 
       isPlayingVariation = true;
-      const variationVideo = randomVariationVideo();
+      const variationVideo = nextVariationVideo();
+      prefetchNextVariationVideo();
 
       await playVideo(variationVideo.forward);
       await playVideo(variationVideo.reverse);
@@ -220,7 +244,11 @@
     commandInput.focus();
 
     if ('serviceWorker' in navigator) {
-      navigator.serviceWorker.register('sw.js');
+      navigator.serviceWorker.register('sw.js').then(() => {
+        prefetchNextVariationVideo();
+      });
+    } else {
+      prefetchNextVariationVideo();
     }
 
     commandInput.addEventListener('keydown', (event) => {

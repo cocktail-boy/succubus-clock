@@ -1,4 +1,5 @@
-const CACHE_NAME = 'succubus-clock-videos-v2';
+const CACHE_NAME = 'succubus-clock-videos-v3';
+const VIDEO_PATH = '/video_outputs_seedance_2_0/anchor_variations/';
 const STATIC_ASSETS = [
   '/',
   '/index.html',
@@ -28,7 +29,7 @@ self.addEventListener('activate', (event) => {
 self.addEventListener('fetch', (event) => {
   const requestUrl = new URL(event.request.url);
   const isSameOrigin = requestUrl.origin === self.location.origin;
-  const isVideo = requestUrl.pathname.endsWith('.mp4');
+  const isVideo = requestUrl.pathname.startsWith(VIDEO_PATH) && requestUrl.pathname.endsWith('.mp4');
   const isStaticAsset =
     requestUrl.pathname === '/index.html' ||
     requestUrl.pathname === '/' ||
