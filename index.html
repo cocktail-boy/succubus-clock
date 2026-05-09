@@ -25,23 +25,33 @@
       max-width: 100%;
     }
 
-    .clock {
+    .clock-panel {
       position: absolute;
       top: 16px;
       left: 50%;
       z-index: 1;
       width: calc(100% - 32px);
       transform: translateX(-50%);
-      font-size: clamp(18px, 3vw, 32px);
       line-height: 1.2;
       text-align: center;
       text-shadow: 0 2px 10px #000;
+    }
+
+    .clock {
+      font-size: clamp(18px, 3vw, 32px);
     }
 
     .clock:focus-visible {
       outline: 2px solid #f4f1ea;
       outline-offset: 6px;
       border-radius: 4px;
+    }
+
+    .countdown {
+      margin-top: 6px;
+      font-family: Consolas, "Courier New", monospace;
+      font-size: clamp(12px, 1.8vw, 18px);
+      color: rgba(244, 241, 234, 0.86);
     }
 
     .command-line {
@@ -90,8 +100,11 @@
 </head>
 <body>
   <main class="image-stage">
-    <div class="clock" id="clock" aria-live="polite" tabindex="0"></div>
-    <img src="succubus_anchor_01_4x4/anchor.png" alt="Succubus anchor">
+    <div class="clock-panel">
+      <div class="clock" id="clock" aria-live="polite" tabindex="0"></div>
+      <div class="countdown" id="countdown" aria-live="polite"></div>
+    </div>
+    <img id="anchorImage" src="succubus_anchor_01_4x4/anchor.png" alt="Succubus anchor">
     <label class="command-line">
       <span>&gt;</span>
       <input id="commandInput" type="text" aria-label="Command line" autocomplete="off" spellcheck="false">
@@ -99,7 +112,34 @@
   </main>
   <script>
     const clock = document.getElementById('clock');
+    const countdown = document.getElementById('countdown');
+    const anchorImage = document.getElementById('anchorImage');
     const commandInput = document.getElementById('commandInput');
+    const anchorImageSrc = 'succubus_anchor_01_4x4/anchor.png';
+    const variationImages = [
+      'variations/img_0001.png',
+      'variations/img_0002.png',
+      'variations/img_0003.png',
+      'variations/img_0004.png',
+      'variations/img_0005.png',
+      'variations/img_0006.png',
+      'variations/img_0007.png',
+      'variations/img_0008.png',
+      'variations/img_0009.png',
+      'variations/img_0010.png',
+      'variations/img_0011.png',
+      'variations/img_0012.png',
+      'variations/img_0013.png',
+      'variations/img_0014.png',
+      'variations/img_0015.png',
+      'variations/img_0016.png',
+      'variations/img_0017.png',
+      'variations/img_0018.png'
+    ];
+    const updateEveryMs = 5000;
+    const variationDurationMs = 1000;
+    let nextImageUpdateAt = Date.now() + updateEveryMs;
+    let variationTimeout;
     const commands = [
       'clock',
       'date',
@@ -121,8 +161,35 @@
       });
     }
 
+    function randomVariationImage() {
+      const imageIndex = Math.floor(Math.random() * variationImages.length);
+      return variationImages[imageIndex];
+    }
+
+    function showVariationImage() {
+      anchorImage.src = randomVariationImage();
+      nextImageUpdateAt = Date.now() + updateEveryMs;
+
+      clearTimeout(variationTimeout);
+      variationTimeout = setTimeout(() => {
+        anchorImage.src = anchorImageSrc;
+      }, variationDurationMs);
+    }
+
+    function updateCountdown() {
+      const remainingMs = Math.max(0, nextImageUpdateAt - Date.now());
+      const remainingSeconds = Math.ceil(remainingMs / 1000);
+      countdown.textContent = `Next image update in ${remainingSeconds}s`;
+
+      if (remainingMs === 0) {
+        showVariationImage();
+      }
+    }
+
     updateClock();
     setInterval(updateClock, 1000);
+    updateCountdown();
+    setInterval(updateCountdown, 250);
     commandInput.focus();
 
     commandInput.addEventListener('keydown', (event) => {
