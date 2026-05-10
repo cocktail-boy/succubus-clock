@@ -97,6 +97,17 @@
       max-width: 100%;
       height: auto;
     }
+
+    .stage-video {
+      background: #101014;
+    }
+
+    .stage-video.is-buffering {
+      position: absolute;
+      inset: 0;
+      opacity: 0;
+      pointer-events: none;
+    }
   </style>
 </head>
 <body>
@@ -107,11 +118,20 @@
     </div>
     <video
       id="anchorVideo"
+      class="stage-video"
       poster="succubus_anchor_01_4x4/anchor.png"
       aria-label="Succubus anchor transition"
       muted
       playsinline
-      preload="metadata"
+      preload="auto"
+    ></video>
+    <video
+      id="bufferVideo"
+      class="stage-video is-buffering"
+      aria-hidden="true"
+      muted
+      playsinline
+      preload="auto"
     ></video>
     <label class="command-line">
       <span>&gt;</span>
@@ -122,10 +142,12 @@
     const clock = document.getElementById('clock');
     const countdown = document.getElementById('countdown');
     const anchorVideo = document.getElementById('anchorVideo');
+    const bufferVideo = document.getElementById('bufferVideo');
     const commandInput = document.getElementById('commandInput');
     const transitionVideoBasePath = 'video_outputs_seedance_2_0/anchor_variations';
     const idleVideoBasePath = 'video_outputs_seedance_2_0/idle_animations';
     const anchorIdleVideo = `${idleVideoBasePath}/anchor_idle_4s.mp4`;
+    const videoTrimSeconds = 0.1;
     const successfulVariations = [
       'img_0001',
       'img_0002',
@@ -147,6 +169,8 @@
       reverse: `${transitionVideoBasePath}/${variationId}_variation_to_anchor_4s.mp4`
     }));
     let nextVariationIndex = 0;
+    let activeVideo = anchorVideo;
+    let inactiveVideo = bufferVideo;
     const prefetchedVideos = new Set();
     const commands = [
       'clock',
@@ -197,14 +221,59 @@
       prefetchVariation(variationVideos[nextVariationIndex]);
     }
 
-    function playVideo(src, statusText) {
+    function loadVideo(video, src) {
       return new Promise((resolve) => {
-        countdown.textContent = statusText;
-        anchorVideo.onended = resolve;
-        anchorVideo.onerror = resolve;
-        anchorVideo.src = src;
-        anchorVideo.load();
-        anchorVideo.play().catch(resolve);
+        function finish() {
+          video.oncanplay = null;
+          video.onerror = null;
+          resolve();
+        }
+
+        video.oncanplay = finish;
+        video.onerror = finish;
+        video.src = src;
+        video.load();
+      });
+    }
+
+    async function playVideo(src, statusText, trimEndSeconds = 0) {
+      await loadVideo(inactiveVideo, src);
+
+      const previousVideo = activeVideo;
+      const nextVideo = inactiveVideo;
+      activeVideo = nextVideo;
+      inactiveVideo = previousVideo;
+
+      countdown.textContent = statusText;
+      activeVideo.classList.remove('is-buffering');
+      inactiveVideo.classList.add('is-buffering');
+      inactiveVideo.pause();
+
+      return new Promise((resolve) => {
+        let trimTimer;
+
+        function finish() {
+          clearInterval(trimTimer);
+          activeVideo.onended = null;
+          activeVideo.onerror = null;
+          activeVideo.ontimeupdate = null;
+          activeVideo.pause();
+          resolve();
+        }
+
+        activeVideo.onended = finish;
+        activeVideo.onerror = finish;
+        activeVideo.ontimeupdate = () => {
+          if (
+            trimEndSeconds > 0 &&
+            Number.isFinite(activeVideo.duration) &&
+            activeVideo.duration - activeVideo.currentTime <= trimEndSeconds
+          ) {
+            finish();
+          }
+        };
+        trimTimer = setInterval(activeVideo.ontimeupdate, 100);
+        activeVideo.play().catch(finish);
       });
     }
 
@@ -213,10 +282,18 @@
         const variationVideo = nextVariation();
         prefetchNextVariation();
 
-        await playVideo(anchorIdleVideo, 'Anchor idle');
-        await playVideo(variationVideo.forward, `Transition to ${variationVideo.id}`);
-        await playVideo(variationVideo.idle, `${variationVideo.id} idle`);
-        await playVideo(variationVideo.reverse, 'Transition back to anchor');
+        await playVideo(anchorIdleVideo, 'Anchor idle', videoTrimSeconds);
+        await playVideo(
+          variationVideo.forward,
+          `Transition to ${variationVideo.id}`,
+          videoTrimSeconds
+        );
+        await playVideo(variationVideo.idle, `${variationVideo.id} idle`, videoTrimSeconds);
+        await playVideo(
+          variationVideo.reverse,
+          'Transition back to anchor',
+          videoTrimSeconds
+        );
       }
     }
 
