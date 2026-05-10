@@ -175,11 +175,12 @@
     const bufferVideo = document.getElementById('bufferVideo');
     const commandInput = document.getElementById('commandInput');
     const audioToggle = document.getElementById('audioToggle');
-    const transitionVideoBasePath = 'video_outputs_seedance_1_5_pro/anchor_variations';
-    const idleVideoBasePath = 'video_outputs_seedance_1_5_pro/idle_animations';
-    const blinkIdleVideoBasePath = 'video_outputs_seedance_1_5_pro/idle_blink_animations';
-    const lookForwardIdleVideoBasePath = 'video_outputs_seedance_1_5_pro/idle_look_forward';
-    const bodyTraceIdleVideoBasePath = 'video_outputs_seedance_1_5_pro/idle_body_trace';
+    const videoRootPath = 'video_outputs_seedance_1_5_pro_handbrake';
+    const transitionVideoBasePath = `${videoRootPath}/anchor_variations`;
+    const idleVideoBasePath = `${videoRootPath}/idle_animations`;
+    const blinkIdleVideoBasePath = `${videoRootPath}/idle_blink_animations`;
+    const lookForwardIdleVideoBasePath = `${videoRootPath}/idle_look_forward`;
+    const bodyTraceIdleVideoBasePath = `${videoRootPath}/idle_body_trace`;
     const anchorIdleVideo = `${idleVideoBasePath}/anchor_idle_4s.mp4`;
     const anchorBlinkIdleVideo = `${blinkIdleVideoBasePath}/anchor_idle_blink_4s.mp4`;
     const anchorLookForwardIdleVideo = `${lookForwardIdleVideoBasePath}/anchor_idle_look_forward_4s.mp4`;

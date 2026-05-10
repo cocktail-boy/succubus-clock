@@ -1,4 +1,4 @@
-const CACHE_NAME = 'succubus-clock-videos-v11';
+const CACHE_NAME = 'succubus-clock-videos-v12';
 const MEDIA_PATHS = [
   '/video_outputs_seedance_2_0/anchor_variations/',
   '/video_outputs_seedance_2_0/idle_animations/',
@@ -7,6 +7,11 @@ const MEDIA_PATHS = [
   '/video_outputs_seedance_1_5_pro/idle_blink_animations/',
   '/video_outputs_seedance_1_5_pro/idle_look_forward/',
   '/video_outputs_seedance_1_5_pro/idle_body_trace/',
+  '/video_outputs_seedance_1_5_pro_handbrake/anchor_variations/',
+  '/video_outputs_seedance_1_5_pro_handbrake/idle_animations/',
+  '/video_outputs_seedance_1_5_pro_handbrake/idle_blink_animations/',
+  '/video_outputs_seedance_1_5_pro_handbrake/idle_look_forward/',
+  '/video_outputs_seedance_1_5_pro_handbrake/idle_body_trace/',
   '/music/'
 ];
 const STATIC_ASSETS = [
