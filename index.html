@@ -180,6 +180,9 @@
     let nextVariationIndex = 0;
     let activeVideo = anchorVideo;
     let inactiveVideo = bufferVideo;
+    let transitionRequested = false;
+    let isTransitioning = false;
+    let idleLocation = 'anchor';
     const prefetchedVideos = new Set();
     const commands = [
       'clock',
@@ -234,6 +237,15 @@
 
     function randomIdleVideo(regularVideo, blinkVideo) {
       return Math.random() < 0.5 ? blinkVideo : regularVideo;
+    }
+
+    function requestTransition() {
+      if (isTransitioning) {
+        return;
+      }
+
+      transitionRequested = true;
+      countdown.textContent = idleLocation === 'anchor' ? 'Variation queued' : 'Return queued';
     }
 
     function loadVideo(video, src) {
@@ -293,19 +305,36 @@
 
     async function runVideoSequence() {
       while (true) {
-        const variationVideo = nextVariation();
-        prefetchNextVariation();
-
+        idleLocation = 'anchor';
         await playVideo(
           randomIdleVideo(anchorIdleVideo, anchorBlinkIdleVideo),
           'Anchor idle'
         );
+
+        if (!transitionRequested) {
+          continue;
+        }
+
+        transitionRequested = false;
+        const variationVideo = nextVariation();
+        prefetchNextVariation();
+
+        isTransitioning = true;
         await playVideo(variationVideo.forward, `Transition to ${variationVideo.id}`);
-        await playVideo(
-          randomIdleVideo(variationVideo.idle, variationVideo.blinkIdle),
-          `${variationVideo.id} idle`
-        );
+        isTransitioning = false;
+
+        idleLocation = 'variation';
+        while (!transitionRequested) {
+          await playVideo(
+            randomIdleVideo(variationVideo.idle, variationVideo.blinkIdle),
+            `${variationVideo.id} idle`
+          );
+        }
+
+        transitionRequested = false;
+        isTransitioning = true;
         await playVideo(variationVideo.reverse, 'Transition back to anchor');
+        isTransitioning = false;
       }
     }
 
@@ -320,6 +349,14 @@
     } else {
       prefetchNextVariation();
     }
+
+    document.addEventListener('click', requestTransition);
+    document.addEventListener('touchstart', requestTransition, { passive: true });
+    document.addEventListener('keydown', (event) => {
+      if (event.key !== 'Tab') {
+        requestTransition();
+      }
+    });
 
     runVideoSequence();
 
