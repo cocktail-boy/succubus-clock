@@ -1,7 +1,10 @@
-const CACHE_NAME = 'succubus-clock-videos-v4';
+const CACHE_NAME = 'succubus-clock-videos-v5';
 const VIDEO_PATHS = [
   '/video_outputs_seedance_2_0/anchor_variations/',
-  '/video_outputs_seedance_2_0/idle_animations/'
+  '/video_outputs_seedance_2_0/idle_animations/',
+  '/video_outputs_seedance_1_5_pro/anchor_variations/',
+  '/video_outputs_seedance_1_5_pro/idle_animations/',
+  '/video_outputs_seedance_1_5_pro/idle_blink_animations/'
 ];
 const STATIC_ASSETS = [
   '/',

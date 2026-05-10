@@ -20,6 +20,17 @@ video_outputs_seedance_2_0/anchor_variations/*
 !video_outputs_seedance_2_0/idle_animations/
 video_outputs_seedance_2_0/idle_animations/*
 !video_outputs_seedance_2_0/idle_animations/*.mp4
+!video_outputs_seedance_1_5_pro/
+video_outputs_seedance_1_5_pro/*
+!video_outputs_seedance_1_5_pro/anchor_variations/
+video_outputs_seedance_1_5_pro/anchor_variations/*
+!video_outputs_seedance_1_5_pro/anchor_variations/*.mp4
+!video_outputs_seedance_1_5_pro/idle_animations/
+video_outputs_seedance_1_5_pro/idle_animations/*
+!video_outputs_seedance_1_5_pro/idle_animations/*.mp4
+!video_outputs_seedance_1_5_pro/idle_blink_animations/
+video_outputs_seedance_1_5_pro/idle_blink_animations/*
+!video_outputs_seedance_1_5_pro/idle_blink_animations/*.mp4
 !succubus_anchor_01_4x4/
 succubus_anchor_01_4x4/*
 !succubus_anchor_01_4x4/anchor.png

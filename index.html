@@ -144,10 +144,12 @@
     const anchorVideo = document.getElementById('anchorVideo');
     const bufferVideo = document.getElementById('bufferVideo');
     const commandInput = document.getElementById('commandInput');
-    const transitionVideoBasePath = 'video_outputs_seedance_2_0/anchor_variations';
-    const idleVideoBasePath = 'video_outputs_seedance_2_0/idle_animations';
+    const transitionVideoBasePath = 'video_outputs_seedance_1_5_pro/anchor_variations';
+    const idleVideoBasePath = 'video_outputs_seedance_1_5_pro/idle_animations';
+    const blinkIdleVideoBasePath = 'video_outputs_seedance_1_5_pro/idle_blink_animations';
     const anchorIdleVideo = `${idleVideoBasePath}/anchor_idle_4s.mp4`;
-    const videoTrimSeconds = 0.1;
+    const anchorBlinkIdleVideo = `${blinkIdleVideoBasePath}/anchor_idle_blink_4s.mp4`;
+    const videoTrimSeconds = 1 / 24;
     const successfulVariations = [
       'img_0001',
       'img_0002',
@@ -157,15 +159,22 @@
       'img_0006',
       'img_0007',
       'img_0008',
+      'img_0009',
       'img_0010',
       'img_0011',
+      'img_0012',
+      'img_0013',
+      'img_0014',
       'img_0015',
-      'img_0016'
+      'img_0016',
+      'img_0017',
+      'img_0018'
     ];
     const variationVideos = successfulVariations.map((variationId) => ({
       id: variationId,
       forward: `${transitionVideoBasePath}/${variationId}_anchor_to_variation_8s.mp4`,
       idle: `${idleVideoBasePath}/${variationId}_idle_4s.mp4`,
+      blinkIdle: `${blinkIdleVideoBasePath}/${variationId}_idle_blink_4s.mp4`,
       reverse: `${transitionVideoBasePath}/${variationId}_variation_to_anchor_4s.mp4`
     }));
     let nextVariationIndex = 0;
@@ -212,13 +221,19 @@
 
     function prefetchVariation(variationVideo) {
       prefetchVideo(anchorIdleVideo);
+      prefetchVideo(anchorBlinkIdleVideo);
       prefetchVideo(variationVideo.forward);
       prefetchVideo(variationVideo.idle);
+      prefetchVideo(variationVideo.blinkIdle);
       prefetchVideo(variationVideo.reverse);
     }
 
     function prefetchNextVariation() {
       prefetchVariation(variationVideos[nextVariationIndex]);
+    }
+
+    function randomIdleVideo(regularVideo, blinkVideo) {
+      return Math.random() < 0.5 ? blinkVideo : regularVideo;
     }
 
     function loadVideo(video, src) {
@@ -236,7 +251,7 @@
       });
     }
 
-    async function playVideo(src, statusText, trimEndSeconds = 0) {
+    async function playVideo(src, statusText) {
       await loadVideo(inactiveVideo, src);
 
       const previousVideo = activeVideo;
@@ -265,9 +280,8 @@
         activeVideo.onerror = finish;
         activeVideo.ontimeupdate = () => {
           if (
-            trimEndSeconds > 0 &&
             Number.isFinite(activeVideo.duration) &&
-            activeVideo.duration - activeVideo.currentTime <= trimEndSeconds
+            activeVideo.duration - activeVideo.currentTime <= videoTrimSeconds
           ) {
             finish();
           }
@@ -282,18 +296,16 @@
         const variationVideo = nextVariation();
         prefetchNextVariation();
 
-        await playVideo(anchorIdleVideo, 'Anchor idle', videoTrimSeconds);
         await playVideo(
-          variationVideo.forward,
-          `Transition to ${variationVideo.id}`,
-          videoTrimSeconds
+          randomIdleVideo(anchorIdleVideo, anchorBlinkIdleVideo),
+          'Anchor idle'
         );
-        await playVideo(variationVideo.idle, `${variationVideo.id} idle`, videoTrimSeconds);
+        await playVideo(variationVideo.forward, `Transition to ${variationVideo.id}`);
         await playVideo(
-          variationVideo.reverse,
-          'Transition back to anchor',
-          videoTrimSeconds
+          randomIdleVideo(variationVideo.idle, variationVideo.blinkIdle),
+          `${variationVideo.id} idle`
         );
+        await playVideo(variationVideo.reverse, 'Transition back to anchor');
       }
     }
 
