@@ -2,10 +2,12 @@
 Async batch idle-animation Image-to-Video runner for:
   fal-ai/bytedance/seedance/v1.5/pro/image-to-video
 
-For the anchor image and every PNG in ./variations, generate two separate idle
+For the anchor image and every PNG in ./variations, generate four separate idle
 video sets:
-  1. succubus looks at viewer and leans her body forward
-  2. succubus slowly traces her body contour teasingly
+  1. regular subtle idle
+  2. natural eye blink idle
+  3. succubus looks at viewer and leans her body forward
+  4. succubus slowly traces her body contour teasingly
 """
 
 import asyncio
@@ -23,7 +25,33 @@ OUTPUT_ROOT = Path("video_outputs_seedance_1_5_pro")
 
 PROMPT_SETS = [
     {
+        "name": "idle_animations",
+        "suffix": "idle",
+        "prompt": (
+            "Create a subtle looping video game idle animation from the provided image. "
+            "Use gentle breathing motion, tiny posture shifts, slight hair and cloth movement, "
+            "and a steady locked camera. Preserve the character, composition, colors, and painterly style. "
+            "The first and last frames should match closely for a seamless idle loop. "
+            "Avoid walking, posing changes, scene changes, jitter, warping, flicker, extra limbs, "
+            "distorted hands, or facial deformation."
+        ),
+    },
+    {
+        "name": "idle_blink_animations",
+        "suffix": "idle_blink",
+        "prompt": (
+            "Create a subtle looping video game idle animation from the provided image. "
+            "Use gentle breathing motion, tiny posture shifts, slight hair and cloth movement, "
+            "and one or two natural soft eye blinks. Keep the eyelids realistic and symmetrical, "
+            "with no change to gaze direction or facial identity. Preserve the character, composition, "
+            "colors, and painterly style. The first and last frames should match closely for a seamless "
+            "idle loop. Avoid walking, posing changes, scene changes, jitter, warping, flicker, extra limbs, "
+            "distorted hands, facial deformation, or exaggerated cartoon blinking."
+        ),
+    },
+    {
         "name": "idle_look_forward",
+        "suffix": "idle_look_forward",
         "prompt": (
             "Create a subtle looping video game idle animation from the provided image. "
             "The succubus keeps warm eye contact with the viewer and slowly leans her body forward, "
@@ -35,6 +63,7 @@ PROMPT_SETS = [
     },
     {
         "name": "idle_body_trace",
+        "suffix": "idle_body_trace",
         "prompt": (
             "Create a subtle looping video game idle animation from the provided image. "
             "The succubus slowly traces her body contour teasingly with graceful, restrained hand movement, "
@@ -83,6 +112,8 @@ def _validate_config() -> None:
     for prompt_set in PROMPT_SETS:
         if not prompt_set["name"].strip():
             raise ValueError("Each prompt set needs a non-empty name")
+        if not prompt_set["suffix"].strip():
+            raise ValueError(f"Prompt set {prompt_set['name']!r} needs a non-empty suffix")
         if not prompt_set["prompt"].strip():
             raise ValueError(f"Prompt set {prompt_set['name']!r} needs a non-empty prompt")
 
@@ -171,7 +202,7 @@ async def process_image(
 ) -> None:
     async with sem:
         output_dir = OUTPUT_ROOT / prompt_set["name"]
-        out_path = output_dir / f"{name}_{prompt_set['name']}_{IDLE_DURATION}s.mp4"
+        out_path = output_dir / f"{name}_{prompt_set['suffix']}_{IDLE_DURATION}s.mp4"
         if out_path.exists():
             print(f"[{prompt_set['name']} / {name}] already done, skipping.")
             return
