@@ -1,4 +1,4 @@
-const CACHE_NAME = 'succubus-clock-videos-v12';
+const CACHE_NAME = 'succubus-clock-videos-v13';
 const MEDIA_PATHS = [
   '/video_outputs_seedance_2_0/anchor_variations/',
   '/video_outputs_seedance_2_0/idle_animations/',
@@ -19,9 +19,6 @@ const STATIC_ASSETS = [
   '/index.html',
   '/succubus_anchor_01_4x4/anchor.png'
 ];
-const mediaBuffers = new Map();
-const MAX_MEDIA_BUFFERS = 12;
-
 self.addEventListener('install', (event) => {
   event.waitUntil(
     caches.open(CACHE_NAME)
@@ -76,93 +73,44 @@ self.addEventListener('fetch', (event) => {
 });
 
 async function cachedMediaResponse(request, cache) {
-  if (request.headers.has('range')) {
-    const media = await cachedMediaIfAvailable(request, cache);
-    if (media) {
-      return rangedResponse(request, media);
-    }
-    return fetch(request);
-  }
-
-  const media = await cachedMedia(request, cache);
-
-  return new Response(media.buffer.slice(0), {
-    status: 200,
-    headers: media.headers
-  });
-}
-
-async function cachedMediaIfAvailable(request, cache) {
-  const cached = mediaBuffers.get(request.url);
-  if (cached) {
-    return cached;
-  }
-
-  const response = await cache.match(new Request(request.url));
-  if (!response) {
-    return null;
-  }
-
-  const media = {
-    buffer: await response.arrayBuffer(),
-    headers: new Headers(response.headers)
-  };
-  mediaBuffers.set(request.url, media);
-  trimMediaBuffers();
-  return media;
-}
-
-async function cachedMedia(request, cache) {
-  const cached = mediaBuffers.get(request.url);
-  if (cached) {
-    return cached;
-  }
-
   const cacheKey = new Request(request.url);
   let response = await cache.match(cacheKey);
 
   if (!response) {
-    response = await fetch(cacheKey);
-    if (response.ok) {
-      await cache.put(cacheKey, response.clone());
+    const networkResponse = await fetch(cacheKey);
+    if (networkResponse.ok) {
+      await cache.put(cacheKey, networkResponse.clone());
     }
+    response = networkResponse;
   }
 
-  const media = {
-    buffer: await response.arrayBuffer(),
-    headers: new Headers(response.headers)
-  };
-  mediaBuffers.set(request.url, media);
-  trimMediaBuffers();
-  return media;
-}
-
-function trimMediaBuffers() {
-  while (mediaBuffers.size > MAX_MEDIA_BUFFERS) {
-    const oldestUrl = mediaBuffers.keys().next().value;
-    mediaBuffers.delete(oldestUrl);
+  if (!request.headers.has('range') || !response.ok) {
+    return response;
   }
+
+  return rangedResponse(request, response);
 }
 
-async function rangedResponse(request, media) {
+async function rangedResponse(request, response) {
+  const buffer = await response.arrayBuffer();
   const rangeHeader = request.headers.get('range');
   const rangeMatch = rangeHeader.match(/bytes=(\d+)-(\d*)/);
 
   if (!rangeMatch) {
-    return new Response(media.buffer.slice(0), {
+    return new Response(buffer, {
       status: 200,
-      headers: media.headers
+      headers: response.headers
     });
   }
 
   const start = Number(rangeMatch[1]);
-  const end = rangeMatch[2] ? Number(rangeMatch[2]) : media.buffer.byteLength - 1;
-  const chunk = media.buffer.slice(start, end + 1);
-  const headers = new Headers(media.headers);
+  const end = rangeMatch[2] ? Number(rangeMatch[2]) : buffer.byteLength - 1;
+  const chunk = buffer.slice(start, end + 1);
+  const headers = new Headers(response.headers);
 
   headers.set('Accept-Ranges', 'bytes');
   headers.set('Content-Length', String(chunk.byteLength));
-  headers.set('Content-Range', `bytes ${start}-${end}/${media.buffer.byteLength}`);
+  headers.set('Content-Range', `bytes ${start}-${end}/${buffer.byteLength}`);
 
   return new Response(chunk, {
     status: 206,

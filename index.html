@@ -261,15 +261,15 @@
     }
 
     function prefetchVideo(src) {
-      if (prefetchedMedia.has(src)) {
-        return prefetchedMedia.get(src);
+      const existing = prefetchedMedia.get(src);
+      if (existing) {
+        return existing;
       }
 
       const preload = fetch(src).then((response) => {
         if (!response.ok) {
           throw new Error(`Unable to preload ${src}`);
         }
-        return response.arrayBuffer().then(() => true);
       }).catch((error) => {
         prefetchedMedia.delete(src);
         throw error;
