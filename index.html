@@ -162,7 +162,7 @@
       type="button"
       aria-label="Play background music"
       title="Play background music"
-    >▶</button>
+    >&#9654;</button>
     <label class="command-line">
       <span>&gt;</span>
       <input id="commandInput" type="text" aria-label="Command line" autocomplete="off" spellcheck="false">
@@ -230,6 +230,8 @@
     const idleClipQueues = new Map();
     const idleClipPlayCounts = new Map();
     const prefetchedMedia = new Map();
+    let preparedVideoSrc = '';
+    let preparedVideoLoad = Promise.resolve();
     const commands = [
       'clock',
       'date',
@@ -266,7 +268,7 @@
         if (!response.ok) {
           throw new Error(`Unable to preload ${src}`);
         }
-        return response.arrayBuffer();
+        return response.arrayBuffer().then(() => true);
       }).catch((error) => {
         prefetchedMedia.delete(src);
         throw error;
@@ -306,17 +308,8 @@
       ].map(prefetchVideo));
     }
 
-    function prefetchNextVariation() {
-      return prefetchVariation(variationVideos[nextVariationIndex]);
-    }
-
-    function prefetchUpcomingVariations(count) {
-      const preloads = [];
-      for (let offset = 0; offset < count; offset += 1) {
-        const variationIndex = (nextVariationIndex + offset) % variationVideos.length;
-        preloads.push(prefetchVariation(variationVideos[variationIndex]));
-      }
-      return Promise.allSettled(preloads);
+    function prefetchNextTransition() {
+      return prefetchVideo(variationVideos[nextVariationIndex].forward).catch(() => {});
     }
 
     function shuffledClips(idleClips) {
@@ -336,6 +329,20 @@
       }
 
       return queue.shift();
+    }
+
+    function peekIdleClip(queueKey, idleClips) {
+      const queue = idleClipQueues.get(queueKey) || [];
+      if (!queue.length) {
+        queue.push(...shuffledClips(idleClips));
+        idleClipQueues.set(queueKey, queue);
+      }
+
+      return queue[0];
+    }
+
+    function willCompleteIdleCycle(queueKey) {
+      return (idleClipPlayCounts.get(queueKey) || 0) + 1 >= 4;
     }
 
     function countIdleClipPlay(queueKey) {
@@ -394,7 +401,7 @@
 
     function updateAudioToggle() {
       const isPlaying = bgmStarted && !bgmAudio.paused;
-      audioToggle.textContent = isPlaying ? '⏹' : '▶';
+      audioToggle.textContent = isPlaying ? '\u23f9' : '\u25b6';
       audioToggle.setAttribute(
         'aria-label',
         isPlaying ? 'Stop background music' : 'Play background music'
@@ -417,56 +424,86 @@
       });
     }
 
-    async function playVideo(src, statusText) {
-      await loadVideo(inactiveVideo, src);
+    function prepareVideo(src) {
+      if (preparedVideoSrc === src) {
+        return preparedVideoLoad;
+      }
+
+      preparedVideoSrc = src;
+      preparedVideoLoad = loadVideo(inactiveVideo, src);
+      return preparedVideoLoad;
+    }
+
+    async function playVideo(src, statusText, nextSrc = '') {
+      await prepareVideo(src);
 
       const previousVideo = activeVideo;
       const nextVideo = inactiveVideo;
       activeVideo = nextVideo;
       inactiveVideo = previousVideo;
+      preparedVideoSrc = '';
+      preparedVideoLoad = Promise.resolve();
 
       countdown.textContent = statusText;
       activeVideo.classList.remove('is-buffering');
       inactiveVideo.classList.add('is-buffering');
       inactiveVideo.pause();
+      const currentVideo = activeVideo;
 
       return new Promise((resolve) => {
-        let trimTimer;
+        let trimFrame = 0;
+        let finished = false;
 
         function finish() {
-          clearInterval(trimTimer);
-          activeVideo.onended = null;
-          activeVideo.onerror = null;
-          activeVideo.ontimeupdate = null;
-          activeVideo.pause();
+          if (finished) {
+            return;
+          }
+
+          finished = true;
+          cancelAnimationFrame(trimFrame);
+          currentVideo.onended = null;
+          currentVideo.onerror = null;
           resolve();
         }
 
-        activeVideo.onended = finish;
-        activeVideo.onerror = finish;
-        activeVideo.ontimeupdate = () => {
+        function checkTrim() {
           if (
-            Number.isFinite(activeVideo.duration) &&
-            activeVideo.duration - activeVideo.currentTime <= videoTrimSeconds
+            Number.isFinite(currentVideo.duration) &&
+            currentVideo.duration - currentVideo.currentTime <= videoTrimSeconds
           ) {
             finish();
+            return;
           }
-        };
-        trimTimer = setInterval(activeVideo.ontimeupdate, 100);
-        activeVideo.play().catch(finish);
+          trimFrame = requestAnimationFrame(checkTrim);
+        }
+
+        currentVideo.onended = finish;
+        currentVideo.onerror = finish;
+        currentVideo.play().catch(finish);
+        trimFrame = requestAnimationFrame(checkTrim);
+        if (nextSrc) {
+          prepareVideo(nextSrc);
+        }
       });
     }
 
     async function runVideoSequence() {
+      const anchorIdleClips = [
+        { name: 'regular', src: anchorIdleVideo },
+        { name: 'blink', src: anchorBlinkIdleVideo },
+        { name: 'look forward', src: anchorLookForwardIdleVideo },
+        { name: 'body trace', src: anchorBodyTraceIdleVideo }
+      ];
+
       while (true) {
         idleLocation = 'anchor';
-        const anchorIdleClip = nextIdleClip('anchor', [
-          { name: 'regular', src: anchorIdleVideo },
-          { name: 'blink', src: anchorBlinkIdleVideo },
-          { name: 'look forward', src: anchorLookForwardIdleVideo },
-          { name: 'body trace', src: anchorBodyTraceIdleVideo }
-        ]);
-        await playVideo(anchorIdleClip.src, `Anchor idle: ${anchorIdleClip.name}`);
+        const anchorIdleClip = nextIdleClip('anchor', anchorIdleClips);
+        const anchorCycleWillComplete = willCompleteIdleCycle('anchor');
+        const anchorNextSrc = anchorCycleWillComplete
+          ? variationVideos[nextVariationIndex].forward
+          : peekIdleClip('anchor', anchorIdleClips).src;
+
+        await playVideo(anchorIdleClip.src, `Anchor idle: ${anchorIdleClip.name}`, anchorNextSrc);
         const anchorCycleComplete = countIdleClipPlay('anchor');
 
         if (!transitionRequested && !anchorCycleComplete) {
@@ -475,21 +512,36 @@
 
         transitionRequested = false;
         const variationVideo = nextVariation();
-        prefetchNextVariation();
+        prefetchVariation(variationVideo);
+        prefetchNextTransition();
 
         isTransitioning = true;
-        await playVideo(variationVideo.forward, `Transition to ${variationVideo.id}`);
-        isTransitioning = false;
-
-        idleLocation = 'variation';
-        while (!transitionRequested) {
-          const variationIdleClip = nextIdleClip(variationVideo.id, [
+        const variationIdleClips = [
             { name: 'regular', src: variationVideo.idle },
             { name: 'blink', src: variationVideo.blinkIdle },
             { name: 'look forward', src: variationVideo.lookForwardIdle },
             { name: 'body trace', src: variationVideo.bodyTraceIdle }
-          ]);
-          await playVideo(variationIdleClip.src, `${variationVideo.id} idle: ${variationIdleClip.name}`);
+        ];
+        await playVideo(
+          variationVideo.forward,
+          `Transition to ${variationVideo.id}`,
+          peekIdleClip(variationVideo.id, variationIdleClips).src
+        );
+        isTransitioning = false;
+
+        idleLocation = 'variation';
+        while (!transitionRequested) {
+          const variationIdleClip = nextIdleClip(variationVideo.id, variationIdleClips);
+          const variationCycleWillComplete = willCompleteIdleCycle(variationVideo.id);
+          const variationNextSrc = variationCycleWillComplete
+            ? variationVideo.reverse
+            : peekIdleClip(variationVideo.id, variationIdleClips).src;
+
+          await playVideo(
+            variationIdleClip.src,
+            `${variationVideo.id} idle: ${variationIdleClip.name}`,
+            variationNextSrc
+          );
           if (countIdleClipPlay(variationVideo.id)) {
             transitionRequested = true;
           }
@@ -497,7 +549,11 @@
 
         transitionRequested = false;
         isTransitioning = true;
-        await playVideo(variationVideo.reverse, 'Transition back to anchor');
+        await playVideo(
+          variationVideo.reverse,
+          'Transition back to anchor',
+          peekIdleClip('anchor', anchorIdleClips).src
+        );
         isTransitioning = false;
       }
     }
@@ -509,7 +565,7 @@
     async function warmInitialMedia() {
       prefetchAnchorIdles();
       prefetchBgm();
-      prefetchUpcomingVariations(2);
+      prefetchNextTransition();
     }
 
     async function startPlayback() {
@@ -531,7 +587,7 @@
     if ('serviceWorker' in navigator) {
       navigator.serviceWorker.addEventListener('controllerchange', () => {
         prefetchAnchorIdles();
-        prefetchUpcomingVariations(2);
+        prefetchNextTransition();
       });
     }
 
