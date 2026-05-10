@@ -90,6 +90,29 @@
       border-color: #f4f1ea;
     }
 
+    .audio-toggle {
+      position: absolute;
+      top: 16px;
+      right: 16px;
+      z-index: 2;
+      display: grid;
+      place-items: center;
+      width: 40px;
+      height: 40px;
+      border: 1px solid rgba(244, 241, 234, 0.5);
+      border-radius: 50%;
+      background: rgba(16, 16, 20, 0.72);
+      color: #f4f1ea;
+      cursor: pointer;
+      font-size: 18px;
+      line-height: 1;
+    }
+
+    .audio-toggle:focus-visible {
+      outline: 2px solid #f4f1ea;
+      outline-offset: 4px;
+    }
+
     img,
     video {
       display: block;
@@ -133,6 +156,13 @@
       playsinline
       preload="auto"
     ></video>
+    <button
+      class="audio-toggle"
+      id="audioToggle"
+      type="button"
+      aria-label="Play background music"
+      title="Play background music"
+    >▶</button>
     <label class="command-line">
       <span>&gt;</span>
       <input id="commandInput" type="text" aria-label="Command line" autocomplete="off" spellcheck="false">
@@ -144,11 +174,16 @@
     const anchorVideo = document.getElementById('anchorVideo');
     const bufferVideo = document.getElementById('bufferVideo');
     const commandInput = document.getElementById('commandInput');
+    const audioToggle = document.getElementById('audioToggle');
     const transitionVideoBasePath = 'video_outputs_seedance_1_5_pro/anchor_variations';
     const idleVideoBasePath = 'video_outputs_seedance_1_5_pro/idle_animations';
     const blinkIdleVideoBasePath = 'video_outputs_seedance_1_5_pro/idle_blink_animations';
     const anchorIdleVideo = `${idleVideoBasePath}/anchor_idle_4s.mp4`;
     const anchorBlinkIdleVideo = `${blinkIdleVideoBasePath}/anchor_idle_blink_4s.mp4`;
+    const bgmTracks = [
+      'music/Succubus_1.mp3',
+      'music/Succubus_2.mp3'
+    ];
     const videoTrimSeconds = 1 / 24;
     const successfulVariations = [
       'img_0001',
@@ -183,6 +218,9 @@
     let transitionRequested = false;
     let isTransitioning = false;
     let idleLocation = 'anchor';
+    let nextBgmIndex = 0;
+    let bgmStarted = false;
+    const bgmAudio = new Audio();
     const prefetchedVideos = new Set();
     const commands = [
       'clock',
@@ -222,6 +260,10 @@
       });
     }
 
+    function prefetchBgm() {
+      bgmTracks.forEach(prefetchVideo);
+    }
+
     function prefetchVariation(variationVideo) {
       prefetchVideo(anchorIdleVideo);
       prefetchVideo(anchorBlinkIdleVideo);
@@ -246,6 +288,50 @@
 
       transitionRequested = true;
       countdown.textContent = idleLocation === 'anchor' ? 'Variation queued' : 'Return queued';
+    }
+
+    function playNextBgm() {
+      bgmAudio.src = bgmTracks[nextBgmIndex];
+      nextBgmIndex = (nextBgmIndex + 1) % bgmTracks.length;
+      bgmAudio.play().catch(() => {
+        bgmStarted = false;
+        updateAudioToggle();
+      });
+      updateAudioToggle();
+    }
+
+    function startBgm() {
+      if (bgmStarted) {
+        return;
+      }
+
+      bgmStarted = true;
+      bgmAudio.volume = 0.45;
+      playNextBgm();
+    }
+
+    function stopBgm() {
+      bgmStarted = false;
+      bgmAudio.pause();
+      updateAudioToggle();
+    }
+
+    function toggleBgm() {
+      if (bgmStarted && !bgmAudio.paused) {
+        stopBgm();
+      } else {
+        startBgm();
+      }
+    }
+
+    function updateAudioToggle() {
+      const isPlaying = bgmStarted && !bgmAudio.paused;
+      audioToggle.textContent = isPlaying ? '⏹' : '▶';
+      audioToggle.setAttribute(
+        'aria-label',
+        isPlaying ? 'Stop background music' : 'Play background music'
+      );
+      audioToggle.title = isPlaying ? 'Stop background music' : 'Play background music';
     }
 
     function loadVideo(video, src) {
@@ -344,14 +430,26 @@
 
     if ('serviceWorker' in navigator) {
       navigator.serviceWorker.register('sw.js').then(() => {
+        prefetchBgm();
         prefetchNextVariation();
       });
     } else {
+      prefetchBgm();
       prefetchNextVariation();
     }
 
-    document.addEventListener('click', requestTransition);
-    document.addEventListener('touchstart', requestTransition, { passive: true });
+    bgmAudio.addEventListener('ended', playNextBgm);
+    audioToggle.addEventListener('click', (event) => {
+      event.stopPropagation();
+      toggleBgm();
+    });
+
+    document.addEventListener('click', () => {
+      requestTransition();
+    });
+    document.addEventListener('touchstart', () => {
+      requestTransition();
+    }, { passive: true });
     document.addEventListener('keydown', (event) => {
       if (event.key !== 'Tab') {
         requestTransition();

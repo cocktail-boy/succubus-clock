@@ -1,10 +1,11 @@
-const CACHE_NAME = 'succubus-clock-videos-v5';
-const VIDEO_PATHS = [
+const CACHE_NAME = 'succubus-clock-videos-v6';
+const MEDIA_PATHS = [
   '/video_outputs_seedance_2_0/anchor_variations/',
   '/video_outputs_seedance_2_0/idle_animations/',
   '/video_outputs_seedance_1_5_pro/anchor_variations/',
   '/video_outputs_seedance_1_5_pro/idle_animations/',
-  '/video_outputs_seedance_1_5_pro/idle_blink_animations/'
+  '/video_outputs_seedance_1_5_pro/idle_blink_animations/',
+  '/music/'
 ];
 const STATIC_ASSETS = [
   '/',
@@ -35,20 +36,20 @@ self.addEventListener('activate', (event) => {
 self.addEventListener('fetch', (event) => {
   const requestUrl = new URL(event.request.url);
   const isSameOrigin = requestUrl.origin === self.location.origin;
-  const isVideo = VIDEO_PATHS.some((videoPath) => requestUrl.pathname.startsWith(videoPath)) &&
-    requestUrl.pathname.endsWith('.mp4');
+  const isMedia = MEDIA_PATHS.some((mediaPath) => requestUrl.pathname.startsWith(mediaPath)) &&
+    (requestUrl.pathname.endsWith('.mp4') || requestUrl.pathname.endsWith('.mp3'));
   const isStaticAsset =
     requestUrl.pathname === '/index.html' ||
     requestUrl.pathname === '/' ||
     requestUrl.pathname === '/succubus_anchor_01_4x4/anchor.png';
 
-  if (!isSameOrigin || (!isVideo && !isStaticAsset)) {
+  if (!isSameOrigin || (!isMedia && !isStaticAsset)) {
     return;
   }
 
   event.respondWith(
     caches.open(CACHE_NAME).then(async (cache) => {
-      if (isVideo) {
+      if (isMedia) {
         return cachedVideoResponse(event.request, cache);
       }
 

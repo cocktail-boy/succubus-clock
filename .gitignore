@@ -9,6 +9,9 @@
 !index.html
 !sw.js
 !successful_variations.txt
+!music/
+music/*
+!music/*.mp3
 !variations/
 variations/*
 !variations/*.png
