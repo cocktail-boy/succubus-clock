@@ -5,6 +5,7 @@
 !async_seedance_1_5_pro_idle_prompt_sets_i2v.py
 !async_seedance_anchor_variations_i2v.py
 !async_seedance_idle_i2v.py
+!async_nano_banana_2_clock_digits.py
 !compress_videos_handbrake.ps1
 !index.html
 !sw.js
@@ -60,3 +61,6 @@ video_outputs_seedance_1_5_pro_handbrake/idle_body_trace/*
 !succubus_anchor_01_4x4/
 succubus_anchor_01_4x4/*
 !succubus_anchor_01_4x4/anchor.png
+!clock_digits/
+clock_digits/*
+!clock_digits/*.png
