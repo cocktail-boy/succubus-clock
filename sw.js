@@ -1,10 +1,12 @@
-const CACHE_NAME = 'succubus-clock-videos-v6';
+const CACHE_NAME = 'succubus-clock-videos-v7';
 const MEDIA_PATHS = [
   '/video_outputs_seedance_2_0/anchor_variations/',
   '/video_outputs_seedance_2_0/idle_animations/',
   '/video_outputs_seedance_1_5_pro/anchor_variations/',
   '/video_outputs_seedance_1_5_pro/idle_animations/',
   '/video_outputs_seedance_1_5_pro/idle_blink_animations/',
+  '/video_outputs_seedance_1_5_pro/idle_look_forward/',
+  '/video_outputs_seedance_1_5_pro/idle_body_trace/',
   '/music/'
 ];
 const STATIC_ASSETS = [
@@ -50,7 +52,7 @@ self.addEventListener('fetch', (event) => {
   event.respondWith(
     caches.open(CACHE_NAME).then(async (cache) => {
       if (isMedia) {
-        return cachedVideoResponse(event.request, cache);
+        return cachedMediaResponse(event.request, cache);
       }
 
       const cachedResponse = await cache.match(event.request);
@@ -66,7 +68,7 @@ self.addEventListener('fetch', (event) => {
   );
 });
 
-async function cachedVideoResponse(request, cache) {
+async function cachedMediaResponse(request, cache) {
   const cacheKey = new Request(request.url);
   let response = await cache.match(cacheKey);
 

@@ -178,8 +178,12 @@
     const transitionVideoBasePath = 'video_outputs_seedance_1_5_pro/anchor_variations';
     const idleVideoBasePath = 'video_outputs_seedance_1_5_pro/idle_animations';
     const blinkIdleVideoBasePath = 'video_outputs_seedance_1_5_pro/idle_blink_animations';
+    const lookForwardIdleVideoBasePath = 'video_outputs_seedance_1_5_pro/idle_look_forward';
+    const bodyTraceIdleVideoBasePath = 'video_outputs_seedance_1_5_pro/idle_body_trace';
     const anchorIdleVideo = `${idleVideoBasePath}/anchor_idle_4s.mp4`;
     const anchorBlinkIdleVideo = `${blinkIdleVideoBasePath}/anchor_idle_blink_4s.mp4`;
+    const anchorLookForwardIdleVideo = `${lookForwardIdleVideoBasePath}/anchor_idle_look_forward_4s.mp4`;
+    const anchorBodyTraceIdleVideo = `${bodyTraceIdleVideoBasePath}/anchor_idle_body_trace_4s.mp4`;
     const bgmTracks = [
       'music/Succubus_1.mp3',
       'music/Succubus_2.mp3'
@@ -210,6 +214,8 @@
       forward: `${transitionVideoBasePath}/${variationId}_anchor_to_variation_8s.mp4`,
       idle: `${idleVideoBasePath}/${variationId}_idle_4s.mp4`,
       blinkIdle: `${blinkIdleVideoBasePath}/${variationId}_idle_blink_4s.mp4`,
+      lookForwardIdle: `${lookForwardIdleVideoBasePath}/${variationId}_idle_look_forward_4s.mp4`,
+      bodyTraceIdle: `${bodyTraceIdleVideoBasePath}/${variationId}_idle_body_trace_4s.mp4`,
       reverse: `${transitionVideoBasePath}/${variationId}_variation_to_anchor_4s.mp4`
     }));
     let nextVariationIndex = 0;
@@ -221,6 +227,8 @@
     let nextBgmIndex = 0;
     let bgmStarted = false;
     const bgmAudio = new Audio();
+    const idleClipQueues = new Map();
+    const idleClipPlayCounts = new Map();
     const prefetchedVideos = new Set();
     const commands = [
       'clock',
@@ -267,9 +275,13 @@
     function prefetchVariation(variationVideo) {
       prefetchVideo(anchorIdleVideo);
       prefetchVideo(anchorBlinkIdleVideo);
+      prefetchVideo(anchorLookForwardIdleVideo);
+      prefetchVideo(anchorBodyTraceIdleVideo);
       prefetchVideo(variationVideo.forward);
       prefetchVideo(variationVideo.idle);
       prefetchVideo(variationVideo.blinkIdle);
+      prefetchVideo(variationVideo.lookForwardIdle);
+      prefetchVideo(variationVideo.bodyTraceIdle);
       prefetchVideo(variationVideo.reverse);
     }
 
@@ -277,8 +289,34 @@
       prefetchVariation(variationVideos[nextVariationIndex]);
     }
 
-    function randomIdleVideo(regularVideo, blinkVideo) {
-      return Math.random() < 0.5 ? blinkVideo : regularVideo;
+    function shuffledClips(idleClips) {
+      const clips = [...idleClips];
+      for (let index = clips.length - 1; index > 0; index -= 1) {
+        const randomIndex = Math.floor(Math.random() * (index + 1));
+        [clips[index], clips[randomIndex]] = [clips[randomIndex], clips[index]];
+      }
+      return clips;
+    }
+
+    function nextIdleClip(queueKey, idleClips) {
+      const queue = idleClipQueues.get(queueKey) || [];
+      if (!queue.length) {
+        queue.push(...shuffledClips(idleClips));
+        idleClipQueues.set(queueKey, queue);
+      }
+
+      return queue.shift();
+    }
+
+    function countIdleClipPlay(queueKey) {
+      const playCount = (idleClipPlayCounts.get(queueKey) || 0) + 1;
+      if (playCount >= 4) {
+        idleClipPlayCounts.set(queueKey, 0);
+        return true;
+      }
+
+      idleClipPlayCounts.set(queueKey, playCount);
+      return false;
     }
 
     function requestTransition() {
@@ -392,12 +430,16 @@
     async function runVideoSequence() {
       while (true) {
         idleLocation = 'anchor';
-        await playVideo(
-          randomIdleVideo(anchorIdleVideo, anchorBlinkIdleVideo),
-          'Anchor idle'
-        );
+        const anchorIdleClip = nextIdleClip('anchor', [
+          { name: 'regular', src: anchorIdleVideo },
+          { name: 'blink', src: anchorBlinkIdleVideo },
+          { name: 'look forward', src: anchorLookForwardIdleVideo },
+          { name: 'body trace', src: anchorBodyTraceIdleVideo }
+        ]);
+        await playVideo(anchorIdleClip.src, `Anchor idle: ${anchorIdleClip.name}`);
+        const anchorCycleComplete = countIdleClipPlay('anchor');
 
-        if (!transitionRequested) {
+        if (!transitionRequested && !anchorCycleComplete) {
           continue;
         }
 
@@ -411,10 +453,16 @@
 
         idleLocation = 'variation';
         while (!transitionRequested) {
-          await playVideo(
-            randomIdleVideo(variationVideo.idle, variationVideo.blinkIdle),
-            `${variationVideo.id} idle`
-          );
+          const variationIdleClip = nextIdleClip(variationVideo.id, [
+            { name: 'regular', src: variationVideo.idle },
+            { name: 'blink', src: variationVideo.blinkIdle },
+            { name: 'look forward', src: variationVideo.lookForwardIdle },
+            { name: 'body trace', src: variationVideo.bodyTraceIdle }
+          ]);
+          await playVideo(variationIdleClip.src, `${variationVideo.id} idle: ${variationIdleClip.name}`);
+          if (countIdleClipPlay(variationVideo.id)) {
+            transitionRequested = true;
+          }
         }
 
         transitionRequested = false;
@@ -429,7 +477,7 @@
     commandInput.focus();
 
     if ('serviceWorker' in navigator) {
-      navigator.serviceWorker.register('sw.js').then(() => {
+      navigator.serviceWorker.register('sw.js').then(() => navigator.serviceWorker.ready).then(() => {
         prefetchBgm();
         prefetchNextVariation();
       });
