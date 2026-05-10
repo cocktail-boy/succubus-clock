@@ -1,4 +1,4 @@
-const CACHE_NAME = 'succubus-clock-videos-v7';
+const CACHE_NAME = 'succubus-clock-videos-v8';
 const MEDIA_PATHS = [
   '/video_outputs_seedance_2_0/anchor_variations/',
   '/video_outputs_seedance_2_0/idle_animations/',

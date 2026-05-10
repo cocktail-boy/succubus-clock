@@ -229,7 +229,7 @@
     const bgmAudio = new Audio();
     const idleClipQueues = new Map();
     const idleClipPlayCounts = new Map();
-    const prefetchedVideos = new Set();
+    const prefetchedMedia = new Map();
     const commands = [
       'clock',
       'date',
@@ -258,35 +258,65 @@
     }
 
     function prefetchVideo(src) {
-      if (prefetchedVideos.has(src)) {
-        return;
+      if (prefetchedMedia.has(src)) {
+        return prefetchedMedia.get(src);
       }
 
-      prefetchedVideos.add(src);
-      fetch(src).catch(() => {
-        prefetchedVideos.delete(src);
+      const preload = fetch(src).then((response) => {
+        if (!response.ok) {
+          throw new Error(`Unable to preload ${src}`);
+        }
+        return response.arrayBuffer();
+      }).catch((error) => {
+        prefetchedMedia.delete(src);
+        throw error;
       });
+
+      prefetchedMedia.set(src, preload);
+      return preload;
+    }
+
+    function warmVideo(video, src) {
+      video.preload = 'auto';
+      video.src = src;
+      video.load();
     }
 
     function prefetchBgm() {
-      bgmTracks.forEach(prefetchVideo);
+      return Promise.allSettled(bgmTracks.map(prefetchVideo));
+    }
+
+    function prefetchAnchorIdles() {
+      return Promise.allSettled([
+        anchorIdleVideo,
+        anchorBlinkIdleVideo,
+        anchorLookForwardIdleVideo,
+        anchorBodyTraceIdleVideo
+      ].map(prefetchVideo));
     }
 
     function prefetchVariation(variationVideo) {
-      prefetchVideo(anchorIdleVideo);
-      prefetchVideo(anchorBlinkIdleVideo);
-      prefetchVideo(anchorLookForwardIdleVideo);
-      prefetchVideo(anchorBodyTraceIdleVideo);
-      prefetchVideo(variationVideo.forward);
-      prefetchVideo(variationVideo.idle);
-      prefetchVideo(variationVideo.blinkIdle);
-      prefetchVideo(variationVideo.lookForwardIdle);
-      prefetchVideo(variationVideo.bodyTraceIdle);
-      prefetchVideo(variationVideo.reverse);
+      return Promise.allSettled([
+        variationVideo.forward,
+        variationVideo.idle,
+        variationVideo.blinkIdle,
+        variationVideo.lookForwardIdle,
+        variationVideo.bodyTraceIdle,
+        variationVideo.reverse
+      ].map(prefetchVideo));
     }
 
     function prefetchNextVariation() {
-      prefetchVariation(variationVideos[nextVariationIndex]);
+      return prefetchVariation(variationVideos[nextVariationIndex]);
+    }
+
+    function prefetchUpcomingVariations(count) {
+      const preloads = [];
+      for (let offset = 0; offset < count; offset += 1) {
+        const variationIndex = (nextVariationIndex + offset) % variationVideos.length;
+        preloads.push(prefetchVariation(variationVideos[variationIndex]));
+      }
+      return Promise.allSettled(preloads);
     }
 
     function shuffledClips(idleClips) {
@@ -476,14 +506,33 @@
     setInterval(updateClock, 1000);
     commandInput.focus();
 
-    if ('serviceWorker' in navigator) {
-      navigator.serviceWorker.register('sw.js').then(() => navigator.serviceWorker.ready).then(() => {
-        prefetchBgm();
-        prefetchNextVariation();
-      });
-    } else {
+    async function warmInitialMedia() {
+      prefetchAnchorIdles();
       prefetchBgm();
-      prefetchNextVariation();
+      prefetchUpcomingVariations(2);
+    }
+
+    async function startPlayback() {
+      if ('serviceWorker' in navigator) {
+        navigator.serviceWorker.register('sw.js')
+          .then(() => navigator.serviceWorker.ready)
+          .then(warmInitialMedia)
+          .catch(() => {});
+      } else {
+        warmInitialMedia();
+      }
+
+      warmVideo(anchorVideo, anchorIdleVideo);
+      runVideoSequence();
+    }
+
+    startPlayback();
+
+    if ('serviceWorker' in navigator) {
+      navigator.serviceWorker.addEventListener('controllerchange', () => {
+        prefetchAnchorIdles();
+        prefetchUpcomingVariations(2);
+      });
     }
 
     bgmAudio.addEventListener('ended', playNextBgm);
@@ -503,8 +552,6 @@
         requestTransition();
       }
     });
-
-    runVideoSequence();
 
     commandInput.addEventListener('keydown', (event) => {
       if (event.key !== 'Tab') {
