@@ -7,6 +7,8 @@
 !async_seedance_idle_i2v.py
 !async_nano_banana_2_clock_digits.py
 !async_gpt_image_1_5_clock_digits.py
+!gpt_image_2_edit_cute_concept_batch.py
+!fal_lib.py
 !compress_videos_handbrake.ps1
 !index.html
 !sw.js
