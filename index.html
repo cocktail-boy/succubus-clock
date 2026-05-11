@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>Succubus Anchor</title>
+  <title>Die with Zero</title>
   <style>
     * {
       box-sizing: border-box;
@@ -25,71 +25,105 @@
       max-width: 100%;
     }
 
-    .clock-panel {
+    .countdown-panel {
       position: absolute;
-      top: 16px;
+      top: 50%;
       left: 50%;
       z-index: 1;
       width: calc(100% - 32px);
-      transform: translateX(-50%);
-      line-height: 1.2;
+      transform: translate(-50%, -50%);
+      padding: clamp(12px, 2vw, 24px) clamp(16px, 2.5vw, 32px);
+      border-radius: 12px;
+      background: rgba(0, 0, 0, 0.55);
+      backdrop-filter: blur(6px);
       text-align: center;
-      text-shadow: 0 2px 10px #000;
+      text-shadow: 0 2px 14px #000;
     }
 
-    .clock {
+    .countdown-panel:focus-visible {
+      outline: 2px solid #f4f1ea;
+      outline-offset: 4px;
+    }
+
+    .countdown-grid {
+      display: flex;
+      align-items: flex-start;
+      justify-content: center;
+      gap: clamp(14px, 3vw, 44px);
+    }
+
+    .countdown-unit {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+
+    .countdown-digits {
       display: inline-flex;
       align-items: center;
       justify-content: center;
-      gap: 0;
-      padding: clamp(2px, 0.4vw, 5px) clamp(8px, 1.4vw, 18px);
-      border-radius: 8px;
-      background: rgba(0, 0, 0, 0.5);
-      font-size: clamp(18px, 3vw, 32px);
     }
 
-    .clock:focus-visible {
-      outline: 2px solid #f4f1ea;
-      outline-offset: 6px;
-      border-radius: 4px;
-    }
-
-    .clock-digit {
+    .countdown-digit {
       flex: 0 0 auto;
-      display: block;
-      width: clamp(55px, 9.75vw, 125px);
-      height: clamp(60px, 10.5vw, 132px);
-      margin-inline: clamp(-34px, -2.85vw, -16px);
+      width: clamp(42px, 7.2vw, 96px);
+      height: clamp(50px, 8.4vw, 112px);
+      margin-inline: clamp(-18px, -1.5vw, -8px);
       object-fit: contain;
-      filter: drop-shadow(0 2px 6px rgba(0, 0, 0, 0.7));
+      filter: drop-shadow(0 2px 8px rgba(0, 0, 0, 0.7));
     }
 
-    .clock-digit.is-separator {
-      width: clamp(36px, 5.2vw, 73px);
-      margin-inline: clamp(-8px, -0.55vw, -2px);
+    .countdown-label {
+      margin-top: 4px;
+      font-size: clamp(11px, 1.4vw, 16px);
+      letter-spacing: 0.2em;
+      text-transform: uppercase;
+      color: rgba(244, 241, 234, 0.82);
     }
 
-    .clock-date {
+    .countdown-grid--time {
+      margin-top: clamp(10px, 1.6vw, 20px);
+      gap: clamp(10px, 2vw, 30px);
+    }
+
+    .countdown-grid--time .countdown-digit {
+      width: clamp(28px, 4.6vw, 60px);
+      height: clamp(34px, 5.4vw, 72px);
+      margin-inline: clamp(-12px, -1vw, -5px);
+    }
+
+    .countdown-grid--time .countdown-label {
+      font-size: clamp(10px, 1.2vw, 14px);
+    }
+
+    .countdown-target {
       margin-top: 8px;
-      font-size: clamp(14px, 2vw, 22px);
+      font-size: clamp(12px, 1.6vw, 18px);
       letter-spacing: 0.04em;
+      color: rgba(244, 241, 234, 0.82);
     }
 
-    .countdown {
-      margin-top: 6px;
-      font-family: Consolas, "Courier New", monospace;
-      font-size: clamp(12px, 1.8vw, 18px);
-      color: rgba(244, 241, 234, 0.86);
+    .countdown-panel.is-unset .countdown-digits {
+      opacity: 0.32;
     }
 
-    .command-line {
+    .countdown-panel.is-unset .countdown-target {
+      color: rgba(244, 241, 234, 0.6);
+      font-style: italic;
+    }
+
+    .countdown-panel.is-expired .countdown-target {
+      color: #ffb1b1;
+    }
+
+    .lastday-form {
       position: absolute;
       right: 16px;
       bottom: 16px;
       left: 16px;
       z-index: 1;
       display: flex;
-      align-items: center;
+      flex-direction: column;
       gap: 8px;
       padding: 10px 12px;
       border: 1px solid rgba(244, 241, 234, 0.4);
@@ -99,23 +133,97 @@
       font-family: Consolas, "Courier New", monospace;
     }
 
-    .command-line span {
+    .lastday-row {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .lastday-calc {
+      padding-top: 8px;
+      border-top: 1px solid rgba(244, 241, 234, 0.18);
+    }
+
+    .lastday-calc[hidden] {
+      display: none;
+    }
+
+    .lastday-link {
+      margin-left: auto;
+      padding: 4px 0;
+      border: 0;
+      background: transparent;
+      color: rgba(244, 241, 234, 0.78);
+      cursor: pointer;
+      font: inherit;
+      text-decoration: underline dotted;
+    }
+
+    .lastday-link:hover {
+      color: #f4f1ea;
+    }
+
+    .lastday-link:focus-visible {
+      outline: 2px solid #f4f1ea;
+      outline-offset: 2px;
+    }
+
+    .lastday-note {
+      flex-basis: 100%;
+      font-size: 0.82em;
+      color: rgba(244, 241, 234, 0.55);
+    }
+
+    .lastday-label {
       color: #f4f1ea;
       flex: 0 0 auto;
     }
 
-    .command-line input {
-      width: 100%;
+    .lastday-input {
+      flex: 0 1 auto;
       min-width: 0;
-      border: 0;
-      outline: 0;
-      background: transparent;
+      padding: 4px 6px;
+      border: 1px solid rgba(244, 241, 234, 0.4);
+      border-radius: 3px;
+      background: rgba(16, 16, 20, 0.7);
       color: #f4f1ea;
       font: inherit;
     }
 
-    .command-line:focus-within {
+    .lastday-input:focus-visible {
+      outline: 2px solid #f4f1ea;
+      outline-offset: 2px;
       border-color: #f4f1ea;
+    }
+
+    .lastday-age {
+      width: 4em;
+    }
+
+    .lastday-pair {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .lastday-submit {
+      padding: 4px 12px;
+      border: 1px solid rgba(244, 241, 234, 0.6);
+      border-radius: 3px;
+      background: rgba(244, 241, 234, 0.1);
+      color: #f4f1ea;
+      cursor: pointer;
+      font: inherit;
+    }
+
+    .lastday-submit:hover {
+      background: rgba(244, 241, 234, 0.2);
+    }
+
+    .lastday-submit:focus-visible {
+      outline: 2px solid #f4f1ea;
+      outline-offset: 2px;
     }
 
     .audio-toggle {
@@ -163,10 +271,36 @@
 </head>
 <body>
   <main class="image-stage">
-    <div class="clock-panel">
-      <div class="clock" id="clock" aria-live="polite" aria-label="Current time" tabindex="0"></div>
-      <div class="clock-date" id="clockDate" aria-live="polite"></div>
-      <div class="countdown" id="countdown" aria-live="polite"></div>
+    <div class="countdown-panel is-unset" id="countdownPanel" aria-live="polite" aria-label="Time remaining" tabindex="0">
+      <div class="countdown-grid">
+        <div class="countdown-unit">
+          <div class="countdown-digits" id="yearsDigits" aria-hidden="true"></div>
+          <div class="countdown-label">years</div>
+        </div>
+        <div class="countdown-unit">
+          <div class="countdown-digits" id="monthsDigits" aria-hidden="true"></div>
+          <div class="countdown-label">months</div>
+        </div>
+        <div class="countdown-unit">
+          <div class="countdown-digits" id="daysDigits" aria-hidden="true"></div>
+          <div class="countdown-label">days</div>
+        </div>
+      </div>
+      <div class="countdown-grid countdown-grid--time">
+        <div class="countdown-unit">
+          <div class="countdown-digits" id="hoursDigits" aria-hidden="true"></div>
+          <div class="countdown-label">hours</div>
+        </div>
+        <div class="countdown-unit">
+          <div class="countdown-digits" id="minutesDigits" aria-hidden="true"></div>
+          <div class="countdown-label">minutes</div>
+        </div>
+        <div class="countdown-unit">
+          <div class="countdown-digits" id="secondsDigits" aria-hidden="true"></div>
+          <div class="countdown-label">seconds</div>
+        </div>
+      </div>
+      <div class="countdown-target" id="countdownTarget">Set your estimated last day below.</div>
     </div>
     <video
       id="anchorVideo"
@@ -192,44 +326,93 @@
       aria-label="Play background music"
       title="Play background music"
     >&#9654;</button>
-    <label class="command-line">
-      <span>&gt;</span>
-      <input id="commandInput" type="text" aria-label="Command line" autocomplete="off" spellcheck="false">
-    </label>
+    <form class="lastday-form" id="lastdayForm" autocomplete="off">
+      <div class="lastday-row">
+        <label class="lastday-pair">
+          <span class="lastday-label">Current age</span>
+          <input
+            id="currentAge"
+            class="lastday-input lastday-age"
+            type="number"
+            inputmode="numeric"
+            min="0"
+            max="150"
+            step="1"
+            aria-label="Current age"
+            required
+          >
+        </label>
+        <label class="lastday-pair">
+          <span class="lastday-label">Estimated age of death</span>
+          <input
+            id="deathAge"
+            class="lastday-input lastday-age"
+            type="number"
+            inputmode="numeric"
+            min="1"
+            max="150"
+            step="1"
+            aria-label="Estimated age of death"
+            required
+          >
+        </label>
+        <button type="button" class="lastday-link" id="calcToggle" aria-expanded="false" aria-controls="calcPanel">help me estimate</button>
+        <button class="lastday-submit" type="submit">Set</button>
+      </div>
+      <div class="lastday-row lastday-calc" id="calcPanel" hidden>
+        <label class="lastday-pair">
+          <span class="lastday-label">Sex</span>
+          <select id="calcSex" class="lastday-input">
+            <option value="male">Male</option>
+            <option value="female">Female</option>
+          </select>
+        </label>
+        <label class="lastday-pair">
+          <span class="lastday-label">Smoker</span>
+          <select id="calcSmoker" class="lastday-input">
+            <option value="no">No</option>
+            <option value="yes">Yes</option>
+          </select>
+        </label>
+        <label class="lastday-pair">
+          <span class="lastday-label">Health</span>
+          <select id="calcHealth" class="lastday-input">
+            <option value="excellent">Excellent</option>
+            <option value="average" selected>Average</option>
+            <option value="poor">Poor</option>
+          </select>
+        </label>
+        <button type="button" class="lastday-submit" id="calcEstimate">Fill estimate</button>
+        <div class="lastday-note">
+          SSA period life table baseline, adjusted for smoking (Jha et al. 2013) and self-rated health (Idler &amp; Benyamini 1997). A rough US-population guide — override the result if your family history or lifestyle differs.
+        </div>
+      </div>
+    </form>
   </main>
   <script>
-    const clock = document.getElementById('clock');
-    const clockDate = document.getElementById('clockDate');
-    const countdown = document.getElementById('countdown');
     const digitAssetPath = 'clock_digits';
-    const digitSlots = [
-      { type: 'digit', key: 'h1' },
-      { type: 'digit', key: 'h2' },
-      { type: 'separator', key: 'sep1' },
-      { type: 'digit', key: 'm1' },
-      { type: 'digit', key: 'm2' },
-      { type: 'separator', key: 'sep2' },
-      { type: 'digit', key: 's1' },
-      { type: 'digit', key: 's2' }
-    ];
-    const clockDigitNodes = digitSlots.map((slot) => {
-      const img = document.createElement('img');
-      img.className = 'clock-digit';
-      if (slot.type === 'separator') {
-        img.classList.add('is-separator');
-        img.src = `${digitAssetPath}/colon.png`;
-        img.alt = ':';
-      } else {
-        img.alt = '';
-      }
-      img.setAttribute('aria-hidden', 'true');
-      clock.appendChild(img);
-      return img;
-    });
-    const lastDigitValue = new Map();
+    const storageKey = 'dwz.ages';
+
+    const countdownPanel = document.getElementById('countdownPanel');
+    const yearsDigits = document.getElementById('yearsDigits');
+    const monthsDigits = document.getElementById('monthsDigits');
+    const daysDigits = document.getElementById('daysDigits');
+    const hoursDigits = document.getElementById('hoursDigits');
+    const minutesDigits = document.getElementById('minutesDigits');
+    const secondsDigits = document.getElementById('secondsDigits');
+    const countdownTarget = document.getElementById('countdownTarget');
+    const lastdayForm = document.getElementById('lastdayForm');
+    const currentAgeInput = document.getElementById('currentAge');
+    const deathAgeInput = document.getElementById('deathAge');
+    const calcToggle = document.getElementById('calcToggle');
+    const calcPanel = document.getElementById('calcPanel');
+    const calcSex = document.getElementById('calcSex');
+    const calcSmoker = document.getElementById('calcSmoker');
+    const calcHealth = document.getElementById('calcHealth');
+    const calcEstimate = document.getElementById('calcEstimate');
+
     const anchorVideo = document.getElementById('anchorVideo');
     const bufferVideo = document.getElementById('bufferVideo');
-    const commandInput = document.getElementById('commandInput');
     const audioToggle = document.getElementById('audioToggle');
     const videoRootPath = 'video_outputs_seedance_1_5_pro_handbrake';
     const transitionVideoBasePath = `${videoRootPath}/anchor_variations`;
@@ -247,24 +430,9 @@
     ];
     const videoTrimSeconds = 1 / 24;
     const successfulVariations = [
-      'img_0001',
-      'img_0002',
-      'img_0003',
-      'img_0004',
-      'img_0005',
-      'img_0006',
-      'img_0007',
-      'img_0008',
-      'img_0009',
-      'img_0010',
-      'img_0011',
-      'img_0012',
-      'img_0013',
-      'img_0014',
-      'img_0015',
-      'img_0016',
-      'img_0017',
-      'img_0018'
+      'img_0001', 'img_0002', 'img_0003', 'img_0004', 'img_0005', 'img_0006',
+      'img_0007', 'img_0008', 'img_0009', 'img_0010', 'img_0011', 'img_0012',
+      'img_0013', 'img_0014', 'img_0015', 'img_0016', 'img_0017', 'img_0018'
     ];
     const variationVideos = successfulVariations.map((variationId) => ({
       id: variationId,
@@ -280,7 +448,6 @@
     let inactiveVideo = bufferVideo;
     let transitionRequested = false;
     let isTransitioning = false;
-    let idleLocation = 'anchor';
     let nextBgmIndex = 0;
     let bgmStarted = false;
     const bgmAudio = new Audio();
@@ -289,46 +456,264 @@
     const prefetchedMedia = new Map();
     let preparedVideoSrc = '';
     let preparedVideoLoad = Promise.resolve();
-    const commands = [
-      'clock',
-      'date',
-      'help',
-      'image',
-      'time'
+
+    let targetDate = null;
+    let targetLabel = '';
+
+    // SSA period life table (US, ~2019 pre-COVID), expected years remaining at exact age.
+    // Source: ssa.gov/oact/STATS/table4c6.html. Sparse anchor points; linearly interpolated.
+    const lifeTableMale = [
+      [0, 76.3], [10, 67.0], [20, 57.3], [25, 52.7], [30, 48.2],
+      [35, 43.6], [40, 39.1], [45, 34.7], [50, 30.4], [55, 26.3],
+      [60, 22.3], [65, 18.5], [70, 14.9], [75, 11.7], [80, 8.8],
+      [85, 6.4], [90, 4.6], [95, 3.2], [100, 2.3]
+    ];
+    const lifeTableFemale = [
+      [0, 81.4], [10, 72.1], [20, 62.4], [25, 57.7], [30, 53.0],
+      [35, 48.3], [40, 43.7], [45, 39.1], [50, 34.7], [55, 30.4],
+      [60, 26.2], [65, 22.0], [70, 18.0], [75, 14.2], [80, 10.6],
+      [85, 7.6], [90, 5.3], [95, 3.6], [100, 2.5]
     ];
 
-    function setDigitSlot(index, value) {
-      const slot = digitSlots[index];
-      if (slot.type !== 'digit') {
-        return;
+    function yearsRemainingAtAge(age, sex) {
+      const table = sex === 'female' ? lifeTableFemale : lifeTableMale;
+      if (age <= table[0][0]) {
+        return table[0][1];
       }
-      if (lastDigitValue.get(slot.key) === value) {
-        return;
+      const last = table[table.length - 1];
+      if (age >= last[0]) {
+        return last[1];
       }
-      lastDigitValue.set(slot.key, value);
-      const node = clockDigitNodes[index];
-      node.src = `${digitAssetPath}/${value}.png`;
-      node.alt = value;
+      for (let i = 0; i < table.length - 1; i += 1) {
+        const [ageA, yearsA] = table[i];
+        const [ageB, yearsB] = table[i + 1];
+        if (age >= ageA && age < ageB) {
+          const t = (age - ageA) / (ageB - ageA);
+          return yearsA * (1 - t) + yearsB * t;
+        }
+      }
+      return last[1];
     }
 
-    function updateClock() {
+    function estimateDeathAge(currentAge, sex, smoker, health) {
+      let years = yearsRemainingAtAge(currentAge, sex);
+      if (smoker) {
+        years -= 10;
+      }
+      if (health === 'excellent') {
+        years += 3;
+      } else if (health === 'poor') {
+        years -= 6;
+      }
+      const result = Math.round(currentAge + years);
+      return Math.max(currentAge + 1, Math.min(120, result));
+    }
+
+    function loadStoredAges() {
+      try {
+        const raw = localStorage.getItem(storageKey);
+        if (!raw) {
+          return null;
+        }
+        const parsed = JSON.parse(raw);
+        if (
+          !Number.isInteger(parsed.currentAge) ||
+          !Number.isInteger(parsed.deathAge) ||
+          parsed.currentAge < 0 || parsed.currentAge > 150 ||
+          parsed.deathAge <= parsed.currentAge || parsed.deathAge > 150 ||
+          typeof parsed.setAt !== 'string'
+        ) {
+          return null;
+        }
+        const setAt = new Date(parsed.setAt);
+        if (Number.isNaN(setAt.getTime())) {
+          return null;
+        }
+        return { currentAge: parsed.currentAge, deathAge: parsed.deathAge, setAt };
+      } catch (error) {
+        return null;
+      }
+    }
+
+    function targetFromAges(currentAge, deathAge, setAt) {
+      const target = new Date(setAt);
+      target.setFullYear(target.getFullYear() + (deathAge - currentAge));
+      return target;
+    }
+
+    function calendarDiff(now, target) {
+      if (target.getTime() <= now.getTime()) {
+        return null;
+      }
+
+      let totalMonths = (target.getFullYear() - now.getFullYear()) * 12
+        + (target.getMonth() - now.getMonth());
+      let anchor = new Date(now);
+      anchor.setMonth(anchor.getMonth() + totalMonths);
+      while (anchor.getTime() > target.getTime() && totalMonths > 0) {
+        totalMonths -= 1;
+        anchor = new Date(now);
+        anchor.setMonth(anchor.getMonth() + totalMonths);
+      }
+
+      const years = Math.floor(totalMonths / 12);
+      const months = totalMonths - years * 12;
+
+      const ms = target.getTime() - anchor.getTime();
+      const totalSeconds = Math.floor(ms / 1000);
+      const days = Math.floor(totalSeconds / 86400);
+      const hours = Math.floor((totalSeconds / 3600) % 24);
+      const minutes = Math.floor((totalSeconds / 60) % 60);
+      const seconds = totalSeconds % 60;
+
+      return { years, months, days, hours, minutes, seconds };
+    }
+
+    function renderDigits(container, value, minDigits) {
+      const text = String(value).padStart(minDigits, '0');
+      const existing = container.children;
+
+      for (let index = 0; index < text.length; index += 1) {
+        const digit = text[index];
+        let node = existing[index];
+        if (!node) {
+          node = document.createElement('img');
+          node.className = 'countdown-digit';
+          node.setAttribute('aria-hidden', 'true');
+          container.appendChild(node);
+        }
+        if (node.dataset.digit !== digit) {
+          node.src = `${digitAssetPath}/${digit}.png`;
+          node.dataset.digit = digit;
+          node.alt = digit;
+        }
+      }
+
+      while (container.children.length > text.length) {
+        container.removeChild(container.lastChild);
+      }
+    }
+
+    function renderTime(hours, minutes, seconds) {
+      renderDigits(hoursDigits, hours, 2);
+      renderDigits(minutesDigits, minutes, 2);
+      renderDigits(secondsDigits, seconds, 2);
+    }
+
+    function updateCountdown() {
+      if (!targetDate) {
+        renderDigits(yearsDigits, 0, 2);
+        renderDigits(monthsDigits, 0, 2);
+        renderDigits(daysDigits, 0, 2);
+        renderTime(0, 0, 0);
+        countdownPanel.classList.add('is-unset');
+        countdownPanel.classList.remove('is-expired');
+        countdownTarget.textContent = 'Enter your current age and estimated age of death below.';
+        countdownPanel.setAttribute('aria-label', 'No life estimate set');
+        return;
+      }
+
       const now = new Date();
-      const hours = String(now.getHours()).padStart(2, '0');
-      const minutes = String(now.getMinutes()).padStart(2, '0');
-      const seconds = String(now.getSeconds()).padStart(2, '0');
-      const digits = `${hours}${minutes}${seconds}`;
-      const digitOrder = [0, 1, 3, 4, 6, 7];
-      digitOrder.forEach((slotIndex, digitIndex) => {
-        setDigitSlot(slotIndex, digits[digitIndex]);
-      });
-      clock.setAttribute('aria-label', `Time ${hours}:${minutes}:${seconds}`);
-      clockDate.textContent = now.toLocaleDateString(undefined, {
-        weekday: 'long',
+      const diff = calendarDiff(now, targetDate);
+
+      if (!diff) {
+        renderDigits(yearsDigits, 0, 2);
+        renderDigits(monthsDigits, 0, 2);
+        renderDigits(daysDigits, 0, 2);
+        renderTime(0, 0, 0);
+        countdownPanel.classList.remove('is-unset');
+        countdownPanel.classList.add('is-expired');
+        countdownTarget.textContent = `Time is up — every moment past ${targetLabel} is borrowed.`;
+        countdownPanel.setAttribute('aria-label', 'Time is up');
+        return;
+      }
+
+      renderDigits(yearsDigits, diff.years, 2);
+      renderDigits(monthsDigits, diff.months, 2);
+      renderDigits(daysDigits, diff.days, 2);
+      renderTime(diff.hours, diff.minutes, diff.seconds);
+      countdownPanel.classList.remove('is-unset');
+      countdownPanel.classList.remove('is-expired');
+      countdownTarget.textContent = `Last day: ${targetLabel}`;
+      countdownPanel.setAttribute(
+        'aria-label',
+        `${diff.years} years ${diff.months} months ${diff.days} days remaining until ${targetLabel}`
+      );
+    }
+
+    function applyTarget(currentAge, deathAge, setAt) {
+      targetDate = targetFromAges(currentAge, deathAge, setAt);
+      const dateStr = targetDate.toLocaleString(undefined, {
         year: 'numeric',
         month: 'long',
-        day: 'numeric'
+        day: 'numeric',
+        hour: '2-digit',
+        minute: '2-digit',
+        second: '2-digit'
       });
+      targetLabel = `age ${deathAge} (${dateStr})`;
+      updateCountdown();
     }
+
+    function initFromStorage() {
+      const stored = loadStoredAges();
+      if (stored) {
+        currentAgeInput.value = String(stored.currentAge);
+        deathAgeInput.value = String(stored.deathAge);
+        applyTarget(stored.currentAge, stored.deathAge, stored.setAt);
+      }
+    }
+
+    calcToggle.addEventListener('click', () => {
+      const isHidden = calcPanel.hasAttribute('hidden');
+      if (isHidden) {
+        calcPanel.removeAttribute('hidden');
+        calcToggle.setAttribute('aria-expanded', 'true');
+        calcToggle.textContent = 'hide estimator';
+      } else {
+        calcPanel.setAttribute('hidden', '');
+        calcToggle.setAttribute('aria-expanded', 'false');
+        calcToggle.textContent = 'help me estimate';
+      }
+    });
+
+    calcEstimate.addEventListener('click', () => {
+      const currentAge = Number(currentAgeInput.value);
+      if (!Number.isInteger(currentAge) || currentAge < 0 || currentAge > 150) {
+        currentAgeInput.focus();
+        return;
+      }
+      const estimate = estimateDeathAge(
+        currentAge,
+        calcSex.value,
+        calcSmoker.value === 'yes',
+        calcHealth.value
+      );
+      deathAgeInput.value = String(estimate);
+      deathAgeInput.focus();
+      deathAgeInput.select();
+    });
+
+    lastdayForm.addEventListener('submit', (event) => {
+      event.preventDefault();
+      const currentAge = Number(currentAgeInput.value);
+      const deathAge = Number(deathAgeInput.value);
+      if (!Number.isInteger(currentAge) || currentAge < 0 || currentAge > 150) {
+        currentAgeInput.focus();
+        return;
+      }
+      if (!Number.isInteger(deathAge) || deathAge <= currentAge || deathAge > 150) {
+        deathAgeInput.focus();
+        return;
+      }
+      const setAt = new Date().toISOString();
+      try {
+        localStorage.setItem(storageKey, JSON.stringify({ currentAge, deathAge, setAt }));
+      } catch (error) {
+        // ignore storage failures; in-memory state is still updated
+      }
+      applyTarget(currentAge, deathAge, setAt);
+    });
 
     function nextVariation() {
       const variationVideo = variationVideos[nextVariationIndex];
@@ -439,7 +824,6 @@
       }
 
       transitionRequested = true;
-      countdown.textContent = idleLocation === 'anchor' ? 'Variation queued' : 'Return queued';
     }
 
     function playNextBgm() {
@@ -478,7 +862,7 @@
 
     function updateAudioToggle() {
       const isPlaying = bgmStarted && !bgmAudio.paused;
-      audioToggle.textContent = isPlaying ? '\u23f9' : '\u25b6';
+      audioToggle.textContent = isPlaying ? '⏹' : '▶';
       audioToggle.setAttribute(
         'aria-label',
         isPlaying ? 'Stop background music' : 'Play background music'
@@ -511,7 +895,7 @@
       return preparedVideoLoad;
     }
 
-    async function playVideo(src, statusText, nextSrc = '') {
+    async function playVideo(src, nextSrc = '') {
       await prepareVideo(src);
 
       const previousVideo = activeVideo;
@@ -521,7 +905,6 @@
       preparedVideoSrc = '';
       preparedVideoLoad = Promise.resolve();
 
-      countdown.textContent = statusText;
       activeVideo.classList.remove('is-buffering');
       inactiveVideo.classList.add('is-buffering');
       inactiveVideo.pause();
@@ -566,21 +949,20 @@
 
     async function runVideoSequence() {
       const anchorIdleClips = [
-        { name: 'regular', src: anchorIdleVideo },
-        { name: 'blink', src: anchorBlinkIdleVideo },
-        { name: 'look forward', src: anchorLookForwardIdleVideo },
-        { name: 'body trace', src: anchorBodyTraceIdleVideo }
+        { src: anchorIdleVideo },
+        { src: anchorBlinkIdleVideo },
+        { src: anchorLookForwardIdleVideo },
+        { src: anchorBodyTraceIdleVideo }
       ];
 
       while (true) {
-        idleLocation = 'anchor';
         const anchorIdleClip = nextIdleClip('anchor', anchorIdleClips);
         const anchorCycleWillComplete = willCompleteIdleCycle('anchor');
         const anchorNextSrc = anchorCycleWillComplete
           ? variationVideos[nextVariationIndex].forward
           : peekIdleClip('anchor', anchorIdleClips).src;
 
-        await playVideo(anchorIdleClip.src, `Anchor idle: ${anchorIdleClip.name}`, anchorNextSrc);
+        await playVideo(anchorIdleClip.src, anchorNextSrc);
         const anchorCycleComplete = countIdleClipPlay('anchor');
 
         if (!transitionRequested && !anchorCycleComplete) {
@@ -594,19 +976,17 @@
 
         isTransitioning = true;
         const variationIdleClips = [
-            { name: 'regular', src: variationVideo.idle },
-            { name: 'blink', src: variationVideo.blinkIdle },
-            { name: 'look forward', src: variationVideo.lookForwardIdle },
-            { name: 'body trace', src: variationVideo.bodyTraceIdle }
+          { src: variationVideo.idle },
+          { src: variationVideo.blinkIdle },
+          { src: variationVideo.lookForwardIdle },
+          { src: variationVideo.bodyTraceIdle }
         ];
         await playVideo(
           variationVideo.forward,
-          `Transition to ${variationVideo.id}`,
           peekIdleClip(variationVideo.id, variationIdleClips).src
         );
         isTransitioning = false;
 
-        idleLocation = 'variation';
         while (!transitionRequested) {
           const variationIdleClip = nextIdleClip(variationVideo.id, variationIdleClips);
           const variationCycleWillComplete = willCompleteIdleCycle(variationVideo.id);
@@ -614,11 +994,7 @@
             ? variationVideo.reverse
             : peekIdleClip(variationVideo.id, variationIdleClips).src;
 
-          await playVideo(
-            variationIdleClip.src,
-            `${variationVideo.id} idle: ${variationIdleClip.name}`,
-            variationNextSrc
-          );
+          await playVideo(variationIdleClip.src, variationNextSrc);
           if (countIdleClipPlay(variationVideo.id)) {
             transitionRequested = true;
           }
@@ -628,16 +1004,15 @@
         isTransitioning = true;
         await playVideo(
           variationVideo.reverse,
-          'Transition back to anchor',
           peekIdleClip('anchor', anchorIdleClips).src
         );
         isTransitioning = false;
       }
     }
 
-    updateClock();
-    setInterval(updateClock, 1000);
-    commandInput.focus();
+    initFromStorage();
+    updateCountdown();
+    setInterval(updateCountdown, 1000);
 
     async function warmInitialMedia() {
       prefetchAnchorIdles();
@@ -674,35 +1049,33 @@
       toggleBgm();
     });
 
-    document.addEventListener('click', () => {
+    function isFormElement(element) {
+      if (!element) {
+        return false;
+      }
+      return lastdayForm.contains(element);
+    }
+
+    document.addEventListener('click', (event) => {
+      if (isFormElement(event.target)) {
+        return;
+      }
       requestTransition();
     });
-    document.addEventListener('touchstart', () => {
+    document.addEventListener('touchstart', (event) => {
+      if (isFormElement(event.target)) {
+        return;
+      }
       requestTransition();
     }, { passive: true });
     document.addEventListener('keydown', (event) => {
-      if (event.key !== 'Tab') {
-        requestTransition();
-      }
-    });
-
-    commandInput.addEventListener('keydown', (event) => {
-      if (event.key !== 'Tab') {
+      if (event.key === 'Tab') {
         return;
       }
-
-      const value = commandInput.value;
-      const commandStart = value.search(/\S+$/);
-      const prefix = commandStart === -1 ? '' : value.slice(commandStart);
-      const match = commands.find((command) => command.startsWith(prefix.toLowerCase()));
-
-      if (!match || match === prefix) {
+      if (isFormElement(document.activeElement)) {
         return;
       }
-
-      event.preventDefault();
-      const leadingText = commandStart === -1 ? value : value.slice(0, commandStart);
-      commandInput.value = `${leadingText}${match}`;
+      requestTransition();
     });
   </script>
 </body>
