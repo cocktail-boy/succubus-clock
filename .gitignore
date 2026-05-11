@@ -6,6 +6,7 @@
 !async_seedance_anchor_variations_i2v.py
 !async_seedance_idle_i2v.py
 !async_nano_banana_2_clock_digits.py
+!async_gpt_image_1_5_clock_digits.py
 !compress_videos_handbrake.ps1
 !index.html
 !sw.js
