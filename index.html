@@ -818,12 +818,24 @@
       return false;
     }
 
+    function skipActiveClip() {
+      if (
+        activeVideo &&
+        !activeVideo.paused &&
+        Number.isFinite(activeVideo.duration) &&
+        activeVideo.duration > 0
+      ) {
+        activeVideo.currentTime = Math.max(0, activeVideo.duration - videoTrimSeconds);
+      }
+    }
+
     function requestTransition() {
       if (isTransitioning) {
         return;
       }
 
       transitionRequested = true;
+      skipActiveClip();
     }
 
     function playNextBgm() {
