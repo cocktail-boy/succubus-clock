@@ -121,12 +121,18 @@
       color: #ffb1b1;
     }
 
-    .lastday-form {
+    .bottom-stack {
       position: absolute;
       right: 16px;
       bottom: 16px;
       left: 16px;
       z-index: 1;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+
+    .lastday-form {
       display: flex;
       flex-direction: column;
       gap: 8px;
@@ -273,6 +279,373 @@
       opacity: 0;
       pointer-events: none;
     }
+
+    .decade-strip {
+      display: flex;
+      align-items: stretch;
+      gap: 4px;
+      padding: 6px;
+      border: 1px solid rgba(244, 241, 234, 0.4);
+      border-radius: 4px;
+      background: rgba(16, 16, 20, 0.78);
+      box-shadow: 0 4px 18px rgba(0, 0, 0, 0.45);
+      font-family: Consolas, "Courier New", monospace;
+      color: #f4f1ea;
+    }
+
+    .decade-strip[hidden] {
+      display: none;
+    }
+
+    .decade-cell {
+      flex: 1 1 0;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 3px;
+      padding: 6px 2px;
+      border: 1px solid rgba(244, 241, 234, 0.2);
+      border-radius: 3px;
+      background: rgba(244, 241, 234, 0.04);
+      color: inherit;
+      cursor: pointer;
+      font: inherit;
+      min-width: 0;
+    }
+
+    .decade-cell:hover {
+      background: rgba(244, 241, 234, 0.14);
+    }
+
+    .decade-cell:focus-visible {
+      outline: 2px solid #f4f1ea;
+      outline-offset: 0;
+    }
+
+    .decade-cell.is-current {
+      border-color: rgba(244, 241, 234, 0.8);
+      background: rgba(244, 241, 234, 0.12);
+    }
+
+    .decade-cell.is-past {
+      opacity: 0.55;
+    }
+
+    .decade-cell-label {
+      font-size: 11px;
+      letter-spacing: 0.06em;
+      color: rgba(244, 241, 234, 0.78);
+    }
+
+    .decade-cell-counts {
+      font-size: 12px;
+      font-weight: 600;
+    }
+
+    .decade-cell-bar {
+      width: 100%;
+      height: 3px;
+      background: rgba(244, 241, 234, 0.18);
+      border-radius: 2px;
+      overflow: hidden;
+    }
+
+    .decade-cell-bar-fill {
+      height: 100%;
+      background: rgba(244, 241, 234, 0.85);
+    }
+
+    .deck-launcher {
+      flex: 0 0 auto;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 3px;
+      padding: 6px 10px;
+      border: 1px solid rgba(244, 241, 234, 0.55);
+      border-radius: 3px;
+      background: rgba(244, 241, 234, 0.1);
+      color: #f4f1ea;
+      cursor: pointer;
+      font: inherit;
+    }
+
+    .deck-launcher:hover {
+      background: rgba(244, 241, 234, 0.2);
+    }
+
+    .deck-launcher:focus-visible {
+      outline: 2px solid #f4f1ea;
+      outline-offset: 2px;
+    }
+
+    .deck-launcher-label {
+      font-size: 11px;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+    }
+
+    .deck-launcher-count {
+      font-size: 13px;
+      font-weight: 700;
+    }
+
+    .modal-backdrop {
+      position: absolute;
+      inset: 0;
+      z-index: 3;
+      display: grid;
+      place-items: center;
+      padding: 24px;
+      background: rgba(16, 16, 20, 0.82);
+      backdrop-filter: blur(8px);
+      font-family: Consolas, "Courier New", monospace;
+      color: #f4f1ea;
+    }
+
+    .modal-backdrop[hidden] {
+      display: none;
+    }
+
+    .modal-panel {
+      width: 100%;
+      max-width: 380px;
+      padding: 20px;
+      border: 1px solid rgba(244, 241, 234, 0.4);
+      border-radius: 8px;
+      background: rgba(16, 16, 20, 0.96);
+      box-shadow: 0 8px 32px rgba(0, 0, 0, 0.5);
+    }
+
+    .modal-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 16px;
+      font-size: 12px;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: rgba(244, 241, 234, 0.78);
+    }
+
+    .modal-close {
+      padding: 2px 10px;
+      border: 1px solid rgba(244, 241, 234, 0.4);
+      border-radius: 3px;
+      background: transparent;
+      color: inherit;
+      cursor: pointer;
+      font: inherit;
+    }
+
+    .modal-close:hover {
+      background: rgba(244, 241, 234, 0.12);
+    }
+
+    .modal-close:focus-visible {
+      outline: 2px solid #f4f1ea;
+      outline-offset: 2px;
+    }
+
+    .card-meta {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 10px;
+      font-size: 11px;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: rgba(244, 241, 234, 0.72);
+    }
+
+    .card-physicality {
+      letter-spacing: 0.25em;
+    }
+
+    .card-text {
+      margin: 0 0 6px;
+      font-size: 22px;
+      line-height: 1.25;
+      font-weight: 600;
+      font-family: Arial, Helvetica, sans-serif;
+    }
+
+    .card-hint {
+      margin: 0 0 18px;
+      font-size: 12px;
+      color: rgba(244, 241, 234, 0.62);
+      font-style: italic;
+    }
+
+    .card-actions {
+      display: grid;
+      grid-template-columns: 1fr 1fr 1fr;
+      gap: 8px;
+    }
+
+    .card-button {
+      padding: 12px 8px;
+      border: 1px solid rgba(244, 241, 234, 0.4);
+      border-radius: 4px;
+      background: rgba(244, 241, 234, 0.06);
+      color: #f4f1ea;
+      cursor: pointer;
+      font: inherit;
+      font-size: 13px;
+      letter-spacing: 0.04em;
+    }
+
+    .card-button:hover {
+      background: rgba(244, 241, 234, 0.16);
+    }
+
+    .card-button:focus-visible {
+      outline: 2px solid #f4f1ea;
+      outline-offset: 2px;
+    }
+
+    .card-button.is-primary {
+      border-color: rgba(244, 241, 234, 0.8);
+      background: rgba(244, 241, 234, 0.18);
+    }
+
+    .card-empty {
+      text-align: center;
+      padding: 12px 0 4px;
+      color: rgba(244, 241, 234, 0.8);
+    }
+
+    .decade-picker {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px;
+      margin-top: 6px;
+    }
+
+    .decade-picker-button {
+      flex: 1 1 60px;
+      min-width: 60px;
+      padding: 8px;
+      border: 1px solid rgba(244, 241, 234, 0.4);
+      border-radius: 4px;
+      background: rgba(244, 241, 234, 0.06);
+      color: #f4f1ea;
+      cursor: pointer;
+      font: inherit;
+      font-size: 13px;
+    }
+
+    .decade-picker-button:hover:not(:disabled) {
+      background: rgba(244, 241, 234, 0.18);
+    }
+
+    .decade-picker-button:disabled {
+      opacity: 0.3;
+      cursor: not-allowed;
+    }
+
+    .bucket-summary {
+      margin-bottom: 12px;
+      font-size: 13px;
+      color: rgba(244, 241, 234, 0.78);
+    }
+
+    .bucket-list {
+      margin: 0;
+      padding: 0;
+      list-style: none;
+      max-height: 48vh;
+      overflow-y: auto;
+    }
+
+    .bucket-item {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      padding: 8px 4px;
+      border-top: 1px solid rgba(244, 241, 234, 0.14);
+      font-size: 14px;
+      font-family: Arial, Helvetica, sans-serif;
+    }
+
+    .bucket-item:first-child {
+      border-top: 0;
+    }
+
+    .bucket-item-text {
+      flex: 1 1 auto;
+      min-width: 0;
+      line-height: 1.3;
+    }
+
+    .bucket-item-phys {
+      flex: 0 0 auto;
+      font-family: Consolas, "Courier New", monospace;
+      font-size: 11px;
+      color: rgba(244, 241, 234, 0.55);
+      letter-spacing: 0.2em;
+    }
+
+    .bucket-item.is-claimed .bucket-item-text {
+      text-decoration: line-through;
+      color: rgba(244, 241, 234, 0.5);
+    }
+
+    .bucket-item.is-expired .bucket-item-text {
+      text-decoration: line-through;
+      color: #ffb1b1;
+    }
+
+    .bucket-item-action {
+      flex: 0 0 auto;
+      padding: 4px 8px;
+      border: 1px solid rgba(244, 241, 234, 0.4);
+      border-radius: 3px;
+      background: transparent;
+      color: #f4f1ea;
+      cursor: pointer;
+      font: inherit;
+      font-size: 11px;
+      letter-spacing: 0.04em;
+    }
+
+    .bucket-item-action:hover {
+      background: rgba(244, 241, 234, 0.14);
+    }
+
+    .bucket-item-action:focus-visible {
+      outline: 2px solid #f4f1ea;
+      outline-offset: 2px;
+    }
+
+    .bucket-empty {
+      padding: 12px 0;
+      text-align: center;
+      color: rgba(244, 241, 234, 0.55);
+      font-style: italic;
+    }
+
+    .rollover-list {
+      margin: 8px 0 16px;
+      padding: 0 0 0 18px;
+      max-height: 40vh;
+      overflow-y: auto;
+    }
+
+    .rollover-list li {
+      margin: 6px 0;
+      color: #ffb1b1;
+      font-family: Arial, Helvetica, sans-serif;
+    }
+
+    .rollover-text {
+      margin: 0 0 8px;
+      font-size: 14px;
+      line-height: 1.4;
+      font-family: Arial, Helvetica, sans-serif;
+    }
   </style>
 </head>
 <body>
@@ -332,68 +705,74 @@
       aria-label="Play background music"
       title="Play background music"
     >&#9654;</button>
-    <form class="lastday-form" id="lastdayForm" autocomplete="off">
-      <div class="lastday-row">
-        <label class="lastday-pair">
-          <span class="lastday-label">Age</span>
-          <input
-            id="currentAge"
-            class="lastday-input lastday-age"
-            type="number"
-            inputmode="numeric"
-            min="0"
-            max="150"
-            step="1"
-            aria-label="Current age"
-            required
-          >
-        </label>
-        <label class="lastday-pair">
-          <span class="lastday-label">Death age</span>
-          <input
-            id="deathAge"
-            class="lastday-input lastday-age"
-            type="number"
-            inputmode="numeric"
-            min="1"
-            max="150"
-            step="1"
-            aria-label="Death age"
-            required
-          >
-        </label>
-        <button type="button" class="lastday-link" id="calcToggle" aria-expanded="false" aria-controls="calcPanel">help me estimate</button>
-        <button class="lastday-submit" type="submit">Set</button>
-      </div>
-      <div class="lastday-row lastday-calc" id="calcPanel" hidden>
-        <label class="lastday-pair">
-          <span class="lastday-label">Sex</span>
-          <select id="calcSex" class="lastday-input">
-            <option value="male">Male</option>
-            <option value="female">Female</option>
-          </select>
-        </label>
-        <label class="lastday-pair">
-          <span class="lastday-label">Smoker</span>
-          <select id="calcSmoker" class="lastday-input">
-            <option value="no">No</option>
-            <option value="yes">Yes</option>
-          </select>
-        </label>
-        <label class="lastday-pair">
-          <span class="lastday-label">Health</span>
-          <select id="calcHealth" class="lastday-input">
-            <option value="excellent">Excellent</option>
-            <option value="average" selected>Average</option>
-            <option value="poor">Poor</option>
-          </select>
-        </label>
-        <button type="button" class="lastday-submit" id="calcEstimate">Fill estimate</button>
-        <div class="lastday-note">
-          SSA period life table baseline, adjusted for smoking (Jha et al. 2013) and self-rated health (Idler &amp; Benyamini 1997). A rough US-population guide — override the result if your family history or lifestyle differs.
+    <div class="bottom-stack">
+      <div class="decade-strip" id="decadeStrip" hidden></div>
+      <form class="lastday-form" id="lastdayForm" autocomplete="off">
+        <div class="lastday-row">
+          <label class="lastday-pair">
+            <span class="lastday-label">Age</span>
+            <input
+              id="currentAge"
+              class="lastday-input lastday-age"
+              type="number"
+              inputmode="numeric"
+              min="0"
+              max="150"
+              step="1"
+              aria-label="Current age"
+              required
+            >
+          </label>
+          <label class="lastday-pair">
+            <span class="lastday-label">Death age</span>
+            <input
+              id="deathAge"
+              class="lastday-input lastday-age"
+              type="number"
+              inputmode="numeric"
+              min="1"
+              max="150"
+              step="1"
+              aria-label="Death age"
+              required
+            >
+          </label>
+          <button type="button" class="lastday-link" id="calcToggle" aria-expanded="false" aria-controls="calcPanel">help me estimate</button>
+          <button class="lastday-submit" type="submit">Set</button>
         </div>
-      </div>
-    </form>
+        <div class="lastday-row lastday-calc" id="calcPanel" hidden>
+          <label class="lastday-pair">
+            <span class="lastday-label">Sex</span>
+            <select id="calcSex" class="lastday-input">
+              <option value="male">Male</option>
+              <option value="female">Female</option>
+            </select>
+          </label>
+          <label class="lastday-pair">
+            <span class="lastday-label">Smoker</span>
+            <select id="calcSmoker" class="lastday-input">
+              <option value="no">No</option>
+              <option value="yes">Yes</option>
+            </select>
+          </label>
+          <label class="lastday-pair">
+            <span class="lastday-label">Health</span>
+            <select id="calcHealth" class="lastday-input">
+              <option value="excellent">Excellent</option>
+              <option value="average" selected>Average</option>
+              <option value="poor">Poor</option>
+            </select>
+          </label>
+          <button type="button" class="lastday-submit" id="calcEstimate">Fill estimate</button>
+          <div class="lastday-note">
+            SSA period life table baseline, adjusted for smoking (Jha et al. 2013) and self-rated health (Idler &amp; Benyamini 1997). A rough US-population guide — override the result if your family history or lifestyle differs.
+          </div>
+        </div>
+      </form>
+    </div>
+    <div class="modal-backdrop" id="deckModal" hidden role="dialog" aria-modal="true" aria-labelledby="deckTitle"></div>
+    <div class="modal-backdrop" id="bucketModal" hidden role="dialog" aria-modal="true" aria-labelledby="bucketTitle"></div>
+    <div class="modal-backdrop" id="rolloverModal" hidden role="dialog" aria-modal="true" aria-labelledby="rolloverTitle"></div>
   </main>
   <script>
     const digitAssetPath = 'clock_digits';
@@ -668,6 +1047,10 @@
       });
       targetLabel = `age ${deathAge} (${dateStr})`;
       updateCountdown();
+      if (typeof renderDecadeStrip === 'function') {
+        detectAndShowRollover();
+        renderDecadeStrip();
+      }
     }
 
     function initFromStorage() {
@@ -728,6 +1111,546 @@
         // ignore storage failures; in-memory state is still updated
       }
       applyTarget(currentAge, deathAge, setAt);
+    });
+
+    // === Bucket list (Die With Zero experience triage) ===
+
+    const bucketStorageKey = 'dwz.bucketlist';
+
+    const EXPERIENCES = [
+      { id: 'everest-bc',           text: 'Trek to Everest base camp',                       category: 'travel',     physicality: 5 },
+      { id: 'kilimanjaro',          text: 'Climb Mount Kilimanjaro',                         category: 'travel',     physicality: 5 },
+      { id: 'jmt-thru-hike',        text: 'Thru-hike the John Muir Trail',                   category: 'travel',     physicality: 5 },
+      { id: 'camino-santiago',      text: 'Walk the Camino de Santiago',                     category: 'travel',     physicality: 4 },
+      { id: 'sail-ocean',           text: 'Cross an ocean by sailboat',                      category: 'travel',     physicality: 4 },
+      { id: 'vietnam-motorbike',    text: 'Motorbike the length of Vietnam',                 category: 'travel',     physicality: 4 },
+      { id: 'swim-whales',          text: 'Swim alongside whales',                           category: 'travel',     physicality: 4 },
+      { id: 'great-barrier',        text: 'Dive the Great Barrier Reef',                     category: 'travel',     physicality: 4 },
+      { id: 'alps-ski',             text: 'Ski for a week in the Alps',                      category: 'travel',     physicality: 4 },
+      { id: 'fuji-climb',           text: 'Climb Mount Fuji',                                category: 'travel',     physicality: 4 },
+      { id: 'antarctica',           text: 'Set foot on Antarctica',                          category: 'travel',     physicality: 3 },
+      { id: 'seven-continents',     text: 'Visit all seven continents',                      category: 'travel',     physicality: 3 },
+      { id: 'sahara-camp',          text: 'Sleep a night in the Sahara',                     category: 'travel',     physicality: 3 },
+      { id: 'machu-picchu',         text: 'See Machu Picchu at sunrise',                     category: 'travel',     physicality: 3 },
+      { id: 'petra-dawn',           text: 'Walk into Petra at dawn',                         category: 'travel',     physicality: 3 },
+      { id: 'galapagos',            text: 'Visit the Galápagos islands',                     category: 'travel',     physicality: 3 },
+      { id: 'trans-siberian',       text: 'Ride the Trans-Siberian railway end to end',      category: 'travel',     physicality: 2 },
+      { id: 'northern-lights',      text: 'See the northern lights',                         category: 'travel',     physicality: 2 },
+      { id: 'cappadocia-balloon',   text: 'Fly a hot-air balloon over Cappadocia',           category: 'travel',     physicality: 2 },
+      { id: 'cross-continent',      text: 'Drive coast to coast across a continent',         category: 'travel',     physicality: 2 },
+
+      { id: 'ironman',              text: 'Finish an Ironman triathlon',                     category: 'physical',   physicality: 5 },
+      { id: 'ultra-50k',            text: 'Run a 50k ultramarathon',                         category: 'physical',   physicality: 5 },
+      { id: 'climb-5-10',           text: 'Lead-climb a 5.10 outdoors',                      category: 'physical',   physicality: 5 },
+      { id: 'freedive-20m',         text: 'Freedive to 20 meters',                           category: 'physical',   physicality: 5 },
+      { id: 'whitewater-kayak',     text: 'Run a class-IV whitewater rapid',                 category: 'physical',   physicality: 5 },
+      { id: 'marathon',             text: 'Run a marathon',                                  category: 'physical',   physicality: 4 },
+      { id: 'ten-pullups',          text: 'Do ten consecutive pull-ups',                     category: 'physical',   physicality: 4 },
+      { id: 'swim-lake',            text: 'Swim across an open lake',                        category: 'physical',   physicality: 4 },
+      { id: 'century-ride',         text: 'Ride 100 miles in a single day',                  category: 'physical',   physicality: 4 },
+      { id: 'paraglide',            text: 'Paraglide off a mountain',                        category: 'physical',   physicality: 4 },
+      { id: 'surf-wave',            text: 'Stand up and ride a real wave',                   category: 'physical',   physicality: 4 },
+      { id: 'sailing-solo',         text: 'Sail a boat solo overnight',                      category: 'physical',   physicality: 4 },
+      { id: 'handstand',            text: 'Hold a freestanding handstand',                   category: 'physical',   physicality: 3 },
+      { id: 'skydive',              text: 'Skydive out of an airplane',                      category: 'physical',   physicality: 3 },
+      { id: 'horse-beach',          text: 'Ride a horse on a beach at speed',                category: 'physical',   physicality: 3 },
+
+      { id: 'omakase',              text: 'Sit at an omakase sushi counter',                 category: 'sensory',    physicality: 1 },
+      { id: 'three-star-meal',      text: 'Eat at a three-Michelin-star restaurant',         category: 'sensory',    physicality: 1 },
+      { id: 'rare-wine',            text: 'Drink a bottle of wine you remember forever',     category: 'sensory',    physicality: 1 },
+      { id: 'whisky-flight',        text: 'Taste a flight of single-malt whiskies',          category: 'sensory',    physicality: 1 },
+      { id: 'meteor-shower',        text: 'Watch a meteor shower from dark sky',             category: 'sensory',    physicality: 2 },
+      { id: 'total-eclipse',        text: 'Stand inside a total solar eclipse',              category: 'sensory',    physicality: 2 },
+      { id: 'midnight-sun',         text: 'See the midnight sun above the Arctic Circle',    category: 'sensory',    physicality: 2 },
+      { id: 'hot-spring-snow',      text: 'Soak in an outdoor hot spring while it snows',    category: 'sensory',    physicality: 2 },
+      { id: 'sleep-outdoors',       text: 'Sleep a night under the open stars',              category: 'sensory',    physicality: 3 },
+      { id: 'dance-tango',          text: 'Dance tango in Buenos Aires',                     category: 'sensory',    physicality: 3 },
+
+      { id: 'write-novel',          text: 'Finish writing a novel',                          category: 'creative',   physicality: 1 },
+      { id: 'publish-poem',         text: 'Publish a poem',                                  category: 'creative',   physicality: 1 },
+      { id: 'learn-instrument',     text: 'Get fluent on a musical instrument',              category: 'creative',   physicality: 1 },
+      { id: 'gallery-show',         text: 'Show your work in a gallery',                     category: 'creative',   physicality: 1 },
+      { id: 'self-portrait',        text: 'Paint a self-portrait',                           category: 'creative',   physicality: 1 },
+      { id: 'short-film',           text: 'Direct a short film start to finish',             category: 'creative',   physicality: 1 },
+      { id: 'write-song',           text: 'Write and record a song',                         category: 'creative',   physicality: 1 },
+      { id: 'calligraphy',          text: 'Learn calligraphy well enough to gift it',        category: 'creative',   physicality: 1 },
+      { id: 'design-book',          text: 'Design and bind a book',                          category: 'creative',   physicality: 1 },
+      { id: 'build-furniture',      text: 'Build a piece of furniture with your hands',      category: 'creative',   physicality: 2 },
+      { id: 'throw-pottery',        text: 'Throw a vessel on a pottery wheel',               category: 'creative',   physicality: 2 },
+      { id: 'stage-play',           text: 'Act in a staged play',                            category: 'creative',   physicality: 2 },
+
+      { id: 'tell-parent',          text: 'Tell a parent exactly what they meant to you',    category: 'relational', physicality: 1 },
+      { id: 'letter-future-self',   text: 'Write a letter to your future self, ten years out', category: 'relational', physicality: 1 },
+      { id: 'reconnect-lost',       text: 'Find and reconnect with someone you lost touch with', category: 'relational', physicality: 1 },
+      { id: 'propose-marry',        text: 'Propose to someone you love',                     category: 'relational', physicality: 1 },
+      { id: 'mentor-young',         text: 'Mentor a younger person for a year',              category: 'relational', physicality: 1 },
+      { id: 'witness-birth',        text: 'Be present at the birth of a child',              category: 'relational', physicality: 1 },
+      { id: 'hold-dying',           text: "Hold someone's hand as they die",                 category: 'relational', physicality: 1 },
+      { id: 'reconcile',            text: 'Reconcile with someone you fell out with',        category: 'relational', physicality: 1 },
+      { id: 'thank-teacher',        text: 'Track down a teacher and thank them',             category: 'relational', physicality: 1 },
+      { id: 'host-fifty',           text: 'Throw a 50-person gathering you host yourself',   category: 'relational', physicality: 2 },
+      { id: 'parents-trip',         text: 'Take your parents on a trip',                     category: 'relational', physicality: 2 },
+      { id: 'weeklong-friends',     text: 'Spend a full week with old friends, no agenda',   category: 'relational', physicality: 2 },
+
+      { id: 'second-language',      text: 'Become conversational in a second language',      category: 'learning',   physicality: 1 },
+      { id: 'learn-code',           text: 'Learn to code well enough to build something',    category: 'learning',   physicality: 1 },
+      { id: 'pilot-ground',         text: 'Pass private pilot ground school',                category: 'learning',   physicality: 1 },
+      { id: 'read-hundred',         text: 'Read 100 books from a great-books list',          category: 'learning',   physicality: 1 },
+      { id: 'master-recipe',        text: "Master a dish so well friends ask for it",        category: 'learning',   physicality: 1 },
+      { id: 'public-speak',         text: 'Give a talk to 100+ people',                      category: 'learning',   physicality: 1 },
+      { id: 'chess-1500',           text: 'Reach 1500 in rated chess',                       category: 'learning',   physicality: 1 },
+      { id: 'martial-belt',         text: 'Earn a belt in a martial art',                    category: 'learning',   physicality: 3 },
+      { id: 'ride-motorcycle',      text: 'Get a motorcycle license',                        category: 'learning',   physicality: 2 },
+      { id: 'learn-partner-dance',  text: 'Learn one partner dance to social-floor level',   category: 'learning',   physicality: 2 },
+
+      { id: 'start-thing',          text: 'Launch something with your name on it',           category: 'vocational', physicality: 1 },
+      { id: 'sabbatical',           text: 'Take a six-month sabbatical',                     category: 'vocational', physicality: 1 },
+      { id: 'mentor-first-job',     text: 'Mentor someone into their first real job',        category: 'vocational', physicality: 1 },
+      { id: 'quit-killing-job',     text: "Walk away from a job that's draining you",        category: 'vocational', physicality: 1 },
+      { id: 'conference-talk',      text: 'Give a conference-stage talk',                    category: 'vocational', physicality: 1 },
+      { id: 'get-published',        text: 'Get something published in a major outlet',       category: 'vocational', physicality: 1 },
+      { id: 'pro-bono',             text: 'Do meaningful work pro bono for a cause',         category: 'vocational', physicality: 1 },
+      { id: 'work-abroad',          text: 'Live and work in another country for a year',     category: 'vocational', physicality: 2 },
+
+      { id: 'daily-meditation',     text: 'Meditate daily for a full year',                  category: 'spiritual',  physicality: 1 },
+      { id: 'deathbed-vigil',       text: "Hold vigil at a dying friend's bedside",          category: 'spiritual',  physicality: 1 },
+      { id: 'silent-retreat',       text: 'Sit a ten-day silent meditation retreat',         category: 'spiritual',  physicality: 2 },
+      { id: 'psilocybin-guided',    text: 'Take a guided psilocybin journey',                category: 'spiritual',  physicality: 2 },
+      { id: 'labyrinth-walk',       text: 'Walk a full-size labyrinth in contemplation',     category: 'spiritual',  physicality: 2 },
+      { id: 'ayahuasca',            text: 'Sit an ayahuasca ceremony with a real lineage',   category: 'spiritual',  physicality: 3 },
+      { id: 'seven-day-fast',       text: 'Complete a seven-day water fast',                 category: 'spiritual',  physicality: 3 },
+      { id: 'vision-quest',         text: 'Spend three days alone in wilderness',            category: 'spiritual',  physicality: 4 },
+
+      { id: 'write-obituary',       text: 'Write your own obituary',                         category: 'mortality',  physicality: 1 },
+      { id: 'plan-funeral',         text: 'Plan and document your own funeral',              category: 'mortality',  physicality: 1 },
+      { id: 'hospice-volunteer',    text: 'Volunteer at a hospice',                          category: 'mortality',  physicality: 1 },
+      { id: 'death-cafe',           text: 'Attend a death café',                             category: 'mortality',  physicality: 1 },
+      { id: 'graveyard-sunrise',    text: 'Walk a graveyard at sunrise',                     category: 'mortality',  physicality: 2 }
+    ];
+
+    const physicalityDecadeOffset = { 5: 0, 4: 10, 3: 20, 2: 30, 1: 999 };
+
+    const decadeStripEl = document.getElementById('decadeStrip');
+    const deckModal = document.getElementById('deckModal');
+    const bucketModal = document.getElementById('bucketModal');
+    const rolloverModal = document.getElementById('rolloverModal');
+
+    let bucketState = loadBucketState();
+
+    function loadBucketState() {
+      try {
+        const raw = localStorage.getItem(bucketStorageKey);
+        if (!raw) {
+          return { version: 1, items: {}, lastSeenDecade: null };
+        }
+        const parsed = JSON.parse(raw);
+        if (!parsed || typeof parsed !== 'object') {
+          return { version: 1, items: {}, lastSeenDecade: null };
+        }
+        return {
+          version: 1,
+          items: parsed.items && typeof parsed.items === 'object' ? parsed.items : {},
+          lastSeenDecade: Number.isInteger(parsed.lastSeenDecade) ? parsed.lastSeenDecade : null
+        };
+      } catch (error) {
+        return { version: 1, items: {}, lastSeenDecade: null };
+      }
+    }
+
+    function saveBucketState() {
+      try {
+        localStorage.setItem(bucketStorageKey, JSON.stringify(bucketState));
+      } catch (error) {
+        // ignore
+      }
+    }
+
+    function getAges() {
+      const c = Number(currentAgeInput.value);
+      const d = Number(deathAgeInput.value);
+      if (!Number.isInteger(c) || c < 0 || !Number.isInteger(d) || d <= c) {
+        return null;
+      }
+      return { currentAge: c, deathAge: d };
+    }
+
+    function decadeOfAge(age) {
+      return Math.floor(age / 10) * 10;
+    }
+
+    function listDecades(ages) {
+      const start = Math.min(20, decadeOfAge(ages.currentAge));
+      const end = decadeOfAge(ages.deathAge);
+      const out = [];
+      for (let d = start; d <= end; d += 10) {
+        out.push(d);
+      }
+      return out;
+    }
+
+    function latestFeasibleDecade(physicality, ages) {
+      const start = decadeOfAge(ages.currentAge);
+      const end = decadeOfAge(ages.deathAge);
+      const offset = physicalityDecadeOffset[physicality] || 0;
+      return Math.min(end, start + offset);
+    }
+
+    function lookupExperience(id) {
+      return EXPERIENCES.find(e => e.id === id) || null;
+    }
+
+    function getNextDeckCard() {
+      for (const exp of EXPERIENCES) {
+        if (!bucketState.items[exp.id]) {
+          return exp;
+        }
+      }
+      return null;
+    }
+
+    function deckRemaining() {
+      let count = 0;
+      for (const exp of EXPERIENCES) {
+        if (!bucketState.items[exp.id]) count += 1;
+      }
+      return count;
+    }
+
+    function physicalityDots(n) {
+      return '●'.repeat(n) + '○'.repeat(5 - n);
+    }
+
+    function escapeHtml(s) {
+      return String(s)
+        .replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;')
+        .replace(/"/g, '&quot;')
+        .replace(/'/g, '&#39;');
+    }
+
+    function physicalityHint(physicality, ages) {
+      const cap = latestFeasibleDecade(physicality, ages);
+      const current = decadeOfAge(ages.currentAge);
+      if (physicality === 1) {
+        return 'No body required — lands in your final decade unless you want it sooner.';
+      }
+      if (cap === current) {
+        return `Body says: this decade only. If you want it, she puts it in your ${current}s.`;
+      }
+      return `Body cap: your ${cap}s.`;
+    }
+
+    function renderDecadeStrip() {
+      const ages = getAges();
+      if (!ages) {
+        decadeStripEl.setAttribute('hidden', '');
+        return;
+      }
+      const decades = listDecades(ages);
+      const currentDecade = decadeOfAge(ages.currentAge);
+      const counts = new Map(decades.map(d => [d, { planned: 0, claimed: 0, expired: 0 }]));
+      for (const exp of EXPERIENCES) {
+        const item = bucketState.items[exp.id];
+        if (!item || item.status === 'skipped') continue;
+        const bucket = counts.get(item.targetDecade);
+        if (!bucket) continue;
+        if (item.status === 'planned') bucket.planned += 1;
+        else if (item.status === 'claimed') bucket.claimed += 1;
+        else if (item.status === 'expired') bucket.expired += 1;
+      }
+      decadeStripEl.innerHTML = '';
+      for (const d of decades) {
+        const c = counts.get(d);
+        const total = c.planned + c.claimed + c.expired;
+        const fillPct = total === 0 ? 0 : Math.round((c.claimed / total) * 100);
+        const cell = document.createElement('button');
+        cell.type = 'button';
+        cell.className = 'decade-cell';
+        if (d === currentDecade) cell.classList.add('is-current');
+        else if (d < currentDecade) cell.classList.add('is-past');
+        cell.setAttribute('aria-label', `${d}s: ${c.claimed} claimed of ${total || 0}`);
+        cell.innerHTML =
+          `<span class="decade-cell-label">${d}s</span>` +
+          `<span class="decade-cell-counts">${c.claimed}/${total || '–'}</span>` +
+          `<span class="decade-cell-bar"><span class="decade-cell-bar-fill" style="width:${fillPct}%"></span></span>`;
+        cell.addEventListener('click', () => openBucketDrawer(d));
+        decadeStripEl.appendChild(cell);
+      }
+      const launcher = document.createElement('button');
+      launcher.type = 'button';
+      launcher.className = 'deck-launcher';
+      const remaining = deckRemaining();
+      launcher.setAttribute('aria-label', `Open deck (${remaining} experiences left)`);
+      launcher.innerHTML =
+        `<span class="deck-launcher-label">Deck</span>` +
+        `<span class="deck-launcher-count">${remaining}</span>`;
+      launcher.addEventListener('click', openDeck);
+      decadeStripEl.appendChild(launcher);
+      decadeStripEl.removeAttribute('hidden');
+    }
+
+    function openDeck() {
+      const ages = getAges();
+      if (!ages) return;
+      renderDeck(ages, 'card', null);
+      deckModal.removeAttribute('hidden');
+    }
+
+    function closeDeck() {
+      deckModal.setAttribute('hidden', '');
+      deckModal.innerHTML = '';
+    }
+
+    function renderDeck(ages, mode, focusedExp) {
+      const exp = focusedExp || getNextDeckCard();
+      if (!exp) {
+        deckModal.innerHTML =
+          `<div class="modal-panel">` +
+            `<div class="modal-header">` +
+              `<span id="deckTitle">Deck cleared</span>` +
+              `<button type="button" class="modal-close" data-action="close-deck">Close</button>` +
+            `</div>` +
+            `<p class="card-empty">Every experience sorted. Tap any decade in the strip to see what's in it.</p>` +
+          `</div>`;
+        deckModal.querySelector('[data-action="close-deck"]').addEventListener('click', closeDeck);
+        return;
+      }
+      const total = EXPERIENCES.length;
+      const remaining = deckRemaining();
+      const position = total - remaining + 1;
+      if (mode === 'card') {
+        deckModal.innerHTML =
+          `<div class="modal-panel">` +
+            `<div class="modal-header">` +
+              `<span id="deckTitle">${position} / ${total}</span>` +
+              `<button type="button" class="modal-close" data-action="close-deck">Close</button>` +
+            `</div>` +
+            `<div class="card-meta">` +
+              `<span>${exp.category.toUpperCase()}</span>` +
+              `<span class="card-physicality" title="Physicality ${exp.physicality}/5">${physicalityDots(exp.physicality)}</span>` +
+            `</div>` +
+            `<p class="card-text">${escapeHtml(exp.text)}</p>` +
+            `<p class="card-hint">${escapeHtml(physicalityHint(exp.physicality, ages))}</p>` +
+            `<div class="card-actions">` +
+              `<button type="button" class="card-button" data-action="skip">Skip</button>` +
+              `<button type="button" class="card-button" data-action="done">Done</button>` +
+              `<button type="button" class="card-button is-primary" data-action="want">Want</button>` +
+            `</div>` +
+          `</div>`;
+        deckModal.querySelector('[data-action="close-deck"]').addEventListener('click', closeDeck);
+        deckModal.querySelector('[data-action="skip"]').addEventListener('click', () => handleSkip(exp, ages));
+        deckModal.querySelector('[data-action="want"]').addEventListener('click', () => handleWant(exp, ages));
+        deckModal.querySelector('[data-action="done"]').addEventListener('click', () => renderDeck(ages, 'done-picker', exp));
+        return;
+      }
+      if (mode === 'done-picker') {
+        const decades = listDecades(ages);
+        const currentDecade = decadeOfAge(ages.currentAge);
+        const pickable = decades.filter(d => d <= currentDecade);
+        let pickerHtml = '';
+        for (const d of pickable) {
+          pickerHtml += `<button type="button" class="decade-picker-button" data-decade="${d}">${d}s</button>`;
+        }
+        deckModal.innerHTML =
+          `<div class="modal-panel">` +
+            `<div class="modal-header">` +
+              `<span id="deckTitle">When?</span>` +
+              `<button type="button" class="modal-close" data-action="back">Back</button>` +
+            `</div>` +
+            `<p class="card-text">${escapeHtml(exp.text)}</p>` +
+            `<p class="card-hint">Which decade did you do it in?</p>` +
+            `<div class="decade-picker">${pickerHtml}</div>` +
+          `</div>`;
+        deckModal.querySelector('[data-action="back"]').addEventListener('click', () => renderDeck(ages, 'card', exp));
+        deckModal.querySelectorAll('.decade-picker-button').forEach(btn => {
+          btn.addEventListener('click', () => handleDone(exp, ages, Number(btn.dataset.decade)));
+        });
+      }
+    }
+
+    function handleSkip(exp, ages) {
+      bucketState.items[exp.id] = {
+        status: 'skipped',
+        targetDecade: null,
+        updatedAt: new Date().toISOString()
+      };
+      saveBucketState();
+      renderDecadeStrip();
+      renderDeck(ages, 'card', null);
+    }
+
+    function handleWant(exp, ages) {
+      const target = latestFeasibleDecade(exp.physicality, ages);
+      bucketState.items[exp.id] = {
+        status: 'planned',
+        targetDecade: target,
+        updatedAt: new Date().toISOString()
+      };
+      saveBucketState();
+      renderDecadeStrip();
+      renderDeck(ages, 'card', null);
+    }
+
+    function handleDone(exp, ages, decade) {
+      bucketState.items[exp.id] = {
+        status: 'claimed',
+        targetDecade: decade,
+        claimedDecade: decade,
+        updatedAt: new Date().toISOString()
+      };
+      saveBucketState();
+      renderDecadeStrip();
+      renderDeck(ages, 'card', null);
+    }
+
+    function openBucketDrawer(decade) {
+      const ages = getAges();
+      if (!ages) return;
+      renderBucketDrawer(decade, ages);
+      bucketModal.removeAttribute('hidden');
+    }
+
+    function closeBucketDrawer() {
+      bucketModal.setAttribute('hidden', '');
+      bucketModal.innerHTML = '';
+    }
+
+    function renderBucketDrawer(decade, ages) {
+      const items = [];
+      for (const exp of EXPERIENCES) {
+        const state = bucketState.items[exp.id];
+        if (!state || state.status === 'skipped') continue;
+        if (state.targetDecade !== decade) continue;
+        items.push({ exp, state });
+      }
+      const rank = (status) => status === 'planned' ? 0 : status === 'claimed' ? 1 : 2;
+      items.sort((a, b) => rank(a.state.status) - rank(b.state.status));
+      const claimed = items.filter(i => i.state.status === 'claimed').length;
+      const expired = items.filter(i => i.state.status === 'expired').length;
+      const planned = items.filter(i => i.state.status === 'planned').length;
+      const currentDecade = decadeOfAge(ages.currentAge);
+      const isPast = decade < currentDecade;
+      let listHtml = '';
+      if (items.length === 0) {
+        listHtml = `<li class="bucket-empty">Nothing in this decade yet.</li>`;
+      } else {
+        for (const { exp, state } of items) {
+          const statusClass = state.status === 'claimed' ? ' is-claimed'
+            : state.status === 'expired' ? ' is-expired' : '';
+          const action = state.status === 'planned' && !isPast
+            ? `<button type="button" class="bucket-item-action" data-action="claim" data-id="${exp.id}">Claim</button>`
+            : '';
+          listHtml +=
+            `<li class="bucket-item${statusClass}">` +
+              `<span class="bucket-item-text">${escapeHtml(exp.text)}</span>` +
+              `<span class="bucket-item-phys" title="Physicality ${exp.physicality}/5">${physicalityDots(exp.physicality)}</span>` +
+              action +
+            `</li>`;
+        }
+      }
+      const summaryParts = [`${claimed} claimed`, `${planned} planned`];
+      if (expired) summaryParts.push(`${expired} expired`);
+      bucketModal.innerHTML =
+        `<div class="modal-panel">` +
+          `<div class="modal-header">` +
+            `<span id="bucketTitle">Your ${decade}s</span>` +
+            `<button type="button" class="modal-close" data-action="close-bucket">Close</button>` +
+          `</div>` +
+          `<p class="bucket-summary">${summaryParts.join(' · ')}</p>` +
+          `<ul class="bucket-list">${listHtml}</ul>` +
+        `</div>`;
+      bucketModal.querySelector('[data-action="close-bucket"]').addEventListener('click', closeBucketDrawer);
+      bucketModal.querySelectorAll('[data-action="claim"]').forEach(btn => {
+        btn.addEventListener('click', () => {
+          const id = btn.dataset.id;
+          const existing = bucketState.items[id];
+          if (!existing) return;
+          bucketState.items[id] = {
+            status: 'claimed',
+            targetDecade: existing.targetDecade,
+            claimedDecade: currentDecade,
+            updatedAt: new Date().toISOString()
+          };
+          saveBucketState();
+          renderDecadeStrip();
+          renderBucketDrawer(decade, ages);
+        });
+      });
+    }
+
+    function detectAndShowRollover() {
+      const ages = getAges();
+      if (!ages) return;
+      const currentDecade = decadeOfAge(ages.currentAge);
+      if (bucketState.lastSeenDecade === null) {
+        bucketState.lastSeenDecade = currentDecade;
+        saveBucketState();
+        return;
+      }
+      if (currentDecade <= bucketState.lastSeenDecade) return;
+      const newlyExpired = [];
+      for (const exp of EXPERIENCES) {
+        const item = bucketState.items[exp.id];
+        if (!item || item.status !== 'planned') continue;
+        if (item.targetDecade < currentDecade) {
+          item.status = 'expired';
+          item.updatedAt = new Date().toISOString();
+          newlyExpired.push(exp);
+        }
+      }
+      bucketState.lastSeenDecade = currentDecade;
+      saveBucketState();
+      if (newlyExpired.length > 0) {
+        showRolloverModal(newlyExpired);
+        renderDecadeStrip();
+      }
+    }
+
+    function showRolloverModal(expired) {
+      const listHtml = expired.map(e => `<li>${escapeHtml(e.text)}</li>`).join('');
+      rolloverModal.innerHTML =
+        `<div class="modal-panel">` +
+          `<div class="modal-header">` +
+            `<span id="rolloverTitle">A decade has closed</span>` +
+            `<button type="button" class="modal-close" data-action="close-rollover">Acknowledge</button>` +
+          `</div>` +
+          `<p class="rollover-text">She took back what you didn't claim in time:</p>` +
+          `<ul class="rollover-list">${listHtml}</ul>` +
+          `<p class="rollover-text">They live in your buckets now, crossed out — the body and time they needed has rolled past.</p>` +
+        `</div>`;
+      rolloverModal.querySelector('[data-action="close-rollover"]').addEventListener('click', () => {
+        rolloverModal.setAttribute('hidden', '');
+        rolloverModal.innerHTML = '';
+      });
+      rolloverModal.removeAttribute('hidden');
+    }
+
+    function isAnyBucketModalOpen() {
+      return !deckModal.hasAttribute('hidden') ||
+             !bucketModal.hasAttribute('hidden') ||
+             !rolloverModal.hasAttribute('hidden');
+    }
+
+    function isBucketUi(target) {
+      if (!target || !target.closest) return false;
+      return Boolean(target.closest('.bottom-stack, .modal-backdrop'));
+    }
+
+    document.addEventListener('keydown', (event) => {
+      if (event.key !== 'Escape') return;
+      if (!rolloverModal.hasAttribute('hidden')) {
+        rolloverModal.setAttribute('hidden', '');
+        rolloverModal.innerHTML = '';
+        return;
+      }
+      if (!deckModal.hasAttribute('hidden')) {
+        closeDeck();
+        return;
+      }
+      if (!bucketModal.hasAttribute('hidden')) {
+        closeBucketDrawer();
+      }
     });
 
     function nextVariation() {
@@ -1083,14 +2006,26 @@
       return lastdayForm.contains(element);
     }
 
+    function isStageInteraction(target) {
+      if (isFormElement(target)) return false;
+      if (isBucketUi(target)) return false;
+      return true;
+    }
+
     document.addEventListener('click', (event) => {
-      if (isFormElement(event.target)) {
+      if (!isStageInteraction(event.target)) {
+        return;
+      }
+      if (isAnyBucketModalOpen()) {
         return;
       }
       requestTransition();
     });
     document.addEventListener('touchstart', (event) => {
-      if (isFormElement(event.target)) {
+      if (!isStageInteraction(event.target)) {
+        return;
+      }
+      if (isAnyBucketModalOpen()) {
         return;
       }
       requestTransition();
@@ -1099,7 +2034,16 @@
       if (event.key === 'Tab') {
         return;
       }
+      if (event.key === 'Escape') {
+        return;
+      }
       if (isFormElement(document.activeElement)) {
+        return;
+      }
+      if (isBucketUi(document.activeElement)) {
+        return;
+      }
+      if (isAnyBucketModalOpen()) {
         return;
       }
       requestTransition();
