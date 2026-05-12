@@ -1,6 +1,11 @@
 *
 !.gitignore
 !AGENTS.md
+!docs/
+docs/*
+!docs/animation_state.md
+!docs/variation_pipeline.md
+!docs/dwz_concept_links.md
 !async_seedance_1_5_pro_anchor_variations_i2v.py
 !async_seedance_1_5_pro_idle_prompt_sets_i2v.py
 !async_seedance_1_5_pro_dwz_variations_i2v.py
