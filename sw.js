@@ -1,15 +1,20 @@
-const CACHE_NAME = 'succubus-clock-videos-v16';
+const CACHE_NAME = 'succubus-clock-videos-v17';
 const MEDIA_PATHS = [
   '/video_outputs_seedance_1_5_pro_handbrake/anchor_variations/',
   '/video_outputs_seedance_1_5_pro_handbrake/anchor_variations_diewithzero/',
+  '/video_outputs_seedance_1_5_pro_handbrake/anchor_variations_closeup_seduction/',
   '/video_outputs_seedance_1_5_pro_handbrake/idle_animations/',
   '/video_outputs_seedance_1_5_pro_handbrake/idle_animations_diewithzero/',
+  '/video_outputs_seedance_1_5_pro_handbrake/idle_animations_closeup_seduction/',
   '/video_outputs_seedance_1_5_pro_handbrake/idle_blink_animations/',
   '/video_outputs_seedance_1_5_pro_handbrake/idle_blink_animations_diewithzero/',
+  '/video_outputs_seedance_1_5_pro_handbrake/idle_blink_animations_closeup_seduction/',
   '/video_outputs_seedance_1_5_pro_handbrake/idle_look_forward/',
   '/video_outputs_seedance_1_5_pro_handbrake/idle_look_forward_diewithzero/',
+  '/video_outputs_seedance_1_5_pro_handbrake/idle_look_forward_closeup_seduction/',
   '/video_outputs_seedance_1_5_pro_handbrake/idle_body_trace/',
   '/video_outputs_seedance_1_5_pro_handbrake/idle_body_trace_diewithzero/',
+  '/video_outputs_seedance_1_5_pro_handbrake/idle_body_trace_closeup_seduction/',
   '/music/'
 ];
 const STATIC_ASSETS = [

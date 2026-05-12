@@ -837,11 +837,27 @@
       bodyTraceIdle: `${bodyTraceIdleVideoBasePath}${subdir}/${id}_idle_body_trace_4s.mp4`,
       reverse: `${transitionVideoBasePath}${subdir}/${id}_variation_to_anchor_4s.mp4`
     }));
+    const closeupVariationVideos = Array.from({ length: 10 }, (_item, index) => {
+      const id = `succubus_closeup_v${String(index + 1).padStart(2, '0')}`;
+      const subdir = '_closeup_seduction';
+      return {
+        id,
+        forward: `${transitionVideoBasePath}${subdir}/${id}_anchor_to_variation_8s.mp4`,
+        idle: `${idleVideoBasePath}${subdir}/${id}_idle_4s.mp4`,
+        blinkIdle: `${blinkIdleVideoBasePath}${subdir}/${id}_idle_blink_4s.mp4`,
+        lookForwardIdle: `${lookForwardIdleVideoBasePath}${subdir}/${id}_idle_look_forward_4s.mp4`,
+        bodyTraceIdle: `${bodyTraceIdleVideoBasePath}${subdir}/${id}_idle_body_trace_4s.mp4`,
+        reverse: `${transitionVideoBasePath}${subdir}/${id}_variation_to_anchor_4s.mp4`
+      };
+    });
     let nextVariationIndex = 0;
+    let nextCloseupVariationIndex = 0;
+    let requestedCloseupVariation = null;
     let activeVideo = anchorVideo;
     let inactiveVideo = bufferVideo;
     let transitionRequested = false;
     let isTransitioning = false;
+    let isCloseupEventActive = false;
     let nextBgmIndex = 0;
     let bgmStarted = false;
     const bgmAudio = new Audio();
@@ -1659,6 +1675,12 @@
       return variationVideo;
     }
 
+    function nextCloseupVariation() {
+      const variationVideo = closeupVariationVideos[nextCloseupVariationIndex];
+      nextCloseupVariationIndex = (nextCloseupVariationIndex + 1) % closeupVariationVideos.length;
+      return variationVideo;
+    }
+
     function prefetchVideo(src) {
       const existing = prefetchedMedia.get(src);
       if (existing) {
@@ -1772,6 +1794,28 @@
         return;
       }
 
+      transitionRequested = true;
+      skipActiveClip();
+    }
+
+    function requestCloseupVariation() {
+      if (isTransitioning) {
+        return;
+      }
+
+      if (isCloseupEventActive) {
+        transitionRequested = true;
+        skipActiveClip();
+        return;
+      }
+
+      if (requestedCloseupVariation) {
+        return;
+      }
+
+      const closeupVariation = nextCloseupVariation();
+      requestedCloseupVariation = closeupVariation;
+      prefetchVariation(closeupVariation);
       transitionRequested = true;
       skipActiveClip();
     }
@@ -1897,6 +1941,49 @@
       });
     }
 
+    async function playVariationEvent(variationVideo, anchorIdleClips, isCloseupEvent = false) {
+      prefetchVariation(variationVideo);
+      prefetchNextTransition();
+
+      isTransitioning = true;
+      const variationIdleClips = [
+        { src: variationVideo.idle },
+        { src: variationVideo.blinkIdle },
+        { src: variationVideo.lookForwardIdle },
+        { src: variationVideo.bodyTraceIdle }
+      ];
+      await playVideo(
+        variationVideo.forward,
+        peekIdleClip(variationVideo.id, variationIdleClips).src
+      );
+      isTransitioning = false;
+      isCloseupEventActive = isCloseupEvent;
+
+      while (!transitionRequested && !requestedCloseupVariation) {
+        const variationIdleClip = nextIdleClip(variationVideo.id, variationIdleClips);
+        const variationCycleWillComplete = willCompleteIdleCycle(variationVideo.id);
+        const variationNextSrc = variationCycleWillComplete
+          ? variationVideo.reverse
+          : peekIdleClip(variationVideo.id, variationIdleClips).src;
+
+        await playVideo(variationIdleClip.src, variationNextSrc);
+        if (countIdleClipPlay(variationVideo.id)) {
+          transitionRequested = true;
+        }
+      }
+
+      transitionRequested = false;
+      isCloseupEventActive = false;
+      isTransitioning = true;
+      await playVideo(
+        variationVideo.reverse,
+        requestedCloseupVariation
+          ? requestedCloseupVariation.forward
+          : peekIdleClip('anchor', anchorIdleClips).src
+      );
+      isTransitioning = false;
+    }
+
     async function runVideoSequence() {
       const anchorIdleClips = [
         { src: anchorIdleVideo },
@@ -1906,9 +1993,18 @@
       ];
 
       while (true) {
+        if (requestedCloseupVariation) {
+          const variationVideo = requestedCloseupVariation;
+          requestedCloseupVariation = null;
+          await playVariationEvent(variationVideo, anchorIdleClips, true);
+          continue;
+        }
+
         const anchorIdleClip = nextIdleClip('anchor', anchorIdleClips);
         const anchorCycleWillComplete = willCompleteIdleCycle('anchor');
-        const anchorNextSrc = anchorCycleWillComplete
+        const anchorNextSrc = requestedCloseupVariation
+          ? requestedCloseupVariation.forward
+          : anchorCycleWillComplete
           ? variationVideos[nextVariationIndex].forward
           : peekIdleClip('anchor', anchorIdleClips).src;
 
@@ -1920,43 +2016,10 @@
         }
 
         transitionRequested = false;
-        const variationVideo = nextVariation();
-        prefetchVariation(variationVideo);
-        prefetchNextTransition();
-
-        isTransitioning = true;
-        const variationIdleClips = [
-          { src: variationVideo.idle },
-          { src: variationVideo.blinkIdle },
-          { src: variationVideo.lookForwardIdle },
-          { src: variationVideo.bodyTraceIdle }
-        ];
-        await playVideo(
-          variationVideo.forward,
-          peekIdleClip(variationVideo.id, variationIdleClips).src
-        );
-        isTransitioning = false;
-
-        while (!transitionRequested) {
-          const variationIdleClip = nextIdleClip(variationVideo.id, variationIdleClips);
-          const variationCycleWillComplete = willCompleteIdleCycle(variationVideo.id);
-          const variationNextSrc = variationCycleWillComplete
-            ? variationVideo.reverse
-            : peekIdleClip(variationVideo.id, variationIdleClips).src;
-
-          await playVideo(variationIdleClip.src, variationNextSrc);
-          if (countIdleClipPlay(variationVideo.id)) {
-            transitionRequested = true;
-          }
-        }
-
-        transitionRequested = false;
-        isTransitioning = true;
-        await playVideo(
-          variationVideo.reverse,
-          peekIdleClip('anchor', anchorIdleClips).src
-        );
-        isTransitioning = false;
+        const isCloseupEvent = Boolean(requestedCloseupVariation);
+        const variationVideo = requestedCloseupVariation || nextVariation();
+        requestedCloseupVariation = null;
+        await playVariationEvent(variationVideo, anchorIdleClips, isCloseupEvent);
       }
     }
 
@@ -2019,7 +2082,7 @@
       if (isAnyBucketModalOpen()) {
         return;
       }
-      requestTransition();
+      requestCloseupVariation();
     });
     document.addEventListener('touchstart', (event) => {
       if (!isStageInteraction(event.target)) {
@@ -2028,7 +2091,7 @@
       if (isAnyBucketModalOpen()) {
         return;
       }
-      requestTransition();
+      requestCloseupVariation();
     }, { passive: true });
     document.addEventListener('keydown', (event) => {
       if (event.key === 'Tab') {
