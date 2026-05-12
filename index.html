@@ -814,13 +814,15 @@
       'music/Succubus_2.mp3'
     ];
     const videoTrimSeconds = 1 / 24;
-    const successfulVariations = [
+    const dwzVariations = [
       { id: 'succubus_dwz_v01', subdir: '_diewithzero' },
       { id: 'succubus_dwz_v02', subdir: '_diewithzero' },
       { id: 'succubus_dwz_v03', subdir: '_diewithzero' },
       { id: 'succubus_dwz_v04', subdir: '_diewithzero' },
       { id: 'succubus_dwz_v05', subdir: '_diewithzero' },
-      { id: 'succubus_dwz_v06', subdir: '_diewithzero' },
+      { id: 'succubus_dwz_v06', subdir: '_diewithzero' }
+    ];
+    const successfulVariations = [
       { id: 'img_0001', subdir: '' }, { id: 'img_0002', subdir: '' }, { id: 'img_0003', subdir: '' },
       { id: 'img_0004', subdir: '' }, { id: 'img_0005', subdir: '' }, { id: 'img_0006', subdir: '' },
       { id: 'img_0007', subdir: '' }, { id: 'img_0008', subdir: '' }, { id: 'img_0009', subdir: '' },
@@ -828,15 +830,8 @@
       { id: 'img_0013', subdir: '' }, { id: 'img_0014', subdir: '' }, { id: 'img_0015', subdir: '' },
       { id: 'img_0016', subdir: '' }, { id: 'img_0017', subdir: '' }, { id: 'img_0018', subdir: '' }
     ];
-    const variationVideos = successfulVariations.map(({ id, subdir }) => ({
-      id,
-      forward: `${transitionVideoBasePath}${subdir}/${id}_anchor_to_variation_8s.mp4`,
-      idle: `${idleVideoBasePath}${subdir}/${id}_idle_4s.mp4`,
-      blinkIdle: `${blinkIdleVideoBasePath}${subdir}/${id}_idle_blink_4s.mp4`,
-      lookForwardIdle: `${lookForwardIdleVideoBasePath}${subdir}/${id}_idle_look_forward_4s.mp4`,
-      bodyTraceIdle: `${bodyTraceIdleVideoBasePath}${subdir}/${id}_idle_body_trace_4s.mp4`,
-      reverse: `${transitionVideoBasePath}${subdir}/${id}_variation_to_anchor_4s.mp4`
-    }));
+    const variationVideos = buildVariationVideos(successfulVariations);
+    const dwzVariationVideos = buildVariationVideos(dwzVariations);
     const closeupVariationVideos = Array.from({ length: 10 }, (_item, index) => {
       const id = `succubus_closeup_v${String(index + 1).padStart(2, '0')}`;
       const subdir = '_closeup_seduction';
@@ -851,13 +846,15 @@
       };
     });
     let nextVariationIndex = 0;
+    let nextDwzVariationIndex = 0;
     let nextCloseupVariationIndex = 0;
+    let requestedDwzVariation = null;
     let requestedCloseupVariation = null;
     let activeVideo = anchorVideo;
     let inactiveVideo = bufferVideo;
     let transitionRequested = false;
     let isTransitioning = false;
-    let isCloseupEventActive = false;
+    let activeVariationEventType = '';
     let nextBgmIndex = 0;
     let bgmStarted = false;
     const bgmAudio = new Audio();
@@ -1089,6 +1086,7 @@
         calcToggle.setAttribute('aria-expanded', 'false');
         calcToggle.textContent = 'help me estimate';
       }
+      requestDwzVariation();
     });
 
     calcEstimate.addEventListener('click', () => {
@@ -1106,6 +1104,7 @@
       deathAgeInput.value = String(estimate);
       deathAgeInput.focus();
       deathAgeInput.select();
+      requestDwzVariation();
     });
 
     lastdayForm.addEventListener('submit', (event) => {
@@ -1127,6 +1126,7 @@
         // ignore storage failures; in-memory state is still updated
       }
       applyTarget(currentAge, deathAge, setAt);
+      requestDwzVariation();
     });
 
     // === Bucket list (Die With Zero experience triage) ===
@@ -1409,6 +1409,7 @@
     function openDeck() {
       const ages = getAges();
       if (!ages) return;
+      requestDwzVariation();
       renderDeck(ages, 'card', null);
       deckModal.removeAttribute('hidden');
     }
@@ -1486,6 +1487,7 @@
     }
 
     function handleSkip(exp, ages) {
+      requestDwzVariation();
       bucketState.items[exp.id] = {
         status: 'skipped',
         targetDecade: null,
@@ -1497,6 +1499,7 @@
     }
 
     function handleWant(exp, ages) {
+      requestDwzVariation();
       const target = latestFeasibleDecade(exp.physicality, ages);
       bucketState.items[exp.id] = {
         status: 'planned',
@@ -1509,6 +1512,7 @@
     }
 
     function handleDone(exp, ages, decade) {
+      requestDwzVariation();
       bucketState.items[exp.id] = {
         status: 'claimed',
         targetDecade: decade,
@@ -1523,6 +1527,7 @@
     function openBucketDrawer(decade) {
       const ages = getAges();
       if (!ages) return;
+      requestDwzVariation();
       renderBucketDrawer(decade, ages);
       bucketModal.removeAttribute('hidden');
     }
@@ -1582,6 +1587,7 @@
           const id = btn.dataset.id;
           const existing = bucketState.items[id];
           if (!existing) return;
+          requestDwzVariation();
           bucketState.items[id] = {
             status: 'claimed',
             targetDecade: existing.targetDecade,
@@ -1669,9 +1675,27 @@
       }
     });
 
+    function buildVariationVideos(variations) {
+      return variations.map(({ id, subdir }) => ({
+        id,
+        forward: `${transitionVideoBasePath}${subdir}/${id}_anchor_to_variation_8s.mp4`,
+        idle: `${idleVideoBasePath}${subdir}/${id}_idle_4s.mp4`,
+        blinkIdle: `${blinkIdleVideoBasePath}${subdir}/${id}_idle_blink_4s.mp4`,
+        lookForwardIdle: `${lookForwardIdleVideoBasePath}${subdir}/${id}_idle_look_forward_4s.mp4`,
+        bodyTraceIdle: `${bodyTraceIdleVideoBasePath}${subdir}/${id}_idle_body_trace_4s.mp4`,
+        reverse: `${transitionVideoBasePath}${subdir}/${id}_variation_to_anchor_4s.mp4`
+      }));
+    }
+
     function nextVariation() {
       const variationVideo = variationVideos[nextVariationIndex];
       nextVariationIndex = (nextVariationIndex + 1) % variationVideos.length;
+      return variationVideo;
+    }
+
+    function nextDwzVariation() {
+      const variationVideo = dwzVariationVideos[nextDwzVariationIndex];
+      nextDwzVariationIndex = (nextDwzVariationIndex + 1) % dwzVariationVideos.length;
       return variationVideo;
     }
 
@@ -1679,6 +1703,26 @@
       const variationVideo = closeupVariationVideos[nextCloseupVariationIndex];
       nextCloseupVariationIndex = (nextCloseupVariationIndex + 1) % closeupVariationVideos.length;
       return variationVideo;
+    }
+
+    function pendingVariationEvent() {
+      return requestedCloseupVariation || requestedDwzVariation;
+    }
+
+    function takePendingVariationEvent() {
+      if (requestedCloseupVariation) {
+        const variationVideo = requestedCloseupVariation;
+        requestedCloseupVariation = null;
+        return { variationVideo, eventType: 'closeup' };
+      }
+
+      if (requestedDwzVariation) {
+        const variationVideo = requestedDwzVariation;
+        requestedDwzVariation = null;
+        return { variationVideo, eventType: 'dwz' };
+      }
+
+      return null;
     }
 
     function prefetchVideo(src) {
@@ -1789,33 +1833,46 @@
       }
     }
 
-    function requestTransition() {
-      if (isTransitioning) {
-        return;
-      }
-
-      transitionRequested = true;
-      skipActiveClip();
-    }
-
     function requestCloseupVariation() {
       if (isTransitioning) {
         return;
       }
 
-      if (isCloseupEventActive) {
+      if (activeVariationEventType === 'closeup') {
         transitionRequested = true;
         skipActiveClip();
         return;
       }
 
-      if (requestedCloseupVariation) {
+      if (activeVariationEventType || pendingVariationEvent()) {
         return;
       }
 
       const closeupVariation = nextCloseupVariation();
       requestedCloseupVariation = closeupVariation;
       prefetchVariation(closeupVariation);
+      transitionRequested = true;
+      skipActiveClip();
+    }
+
+    function requestDwzVariation() {
+      if (isTransitioning) {
+        return;
+      }
+
+      if (activeVariationEventType === 'dwz') {
+        transitionRequested = true;
+        skipActiveClip();
+        return;
+      }
+
+      if (activeVariationEventType || pendingVariationEvent()) {
+        return;
+      }
+
+      const dwzVariation = nextDwzVariation();
+      requestedDwzVariation = dwzVariation;
+      prefetchVariation(dwzVariation);
       transitionRequested = true;
       skipActiveClip();
     }
@@ -1941,7 +1998,7 @@
       });
     }
 
-    async function playVariationEvent(variationVideo, anchorIdleClips, isCloseupEvent = false) {
+    async function playVariationEvent(variationVideo, anchorIdleClips, eventType = '') {
       prefetchVariation(variationVideo);
       prefetchNextTransition();
 
@@ -1957,9 +2014,9 @@
         peekIdleClip(variationVideo.id, variationIdleClips).src
       );
       isTransitioning = false;
-      isCloseupEventActive = isCloseupEvent;
+      activeVariationEventType = eventType;
 
-      while (!transitionRequested && !requestedCloseupVariation) {
+      while (!transitionRequested && !pendingVariationEvent()) {
         const variationIdleClip = nextIdleClip(variationVideo.id, variationIdleClips);
         const variationCycleWillComplete = willCompleteIdleCycle(variationVideo.id);
         const variationNextSrc = variationCycleWillComplete
@@ -1973,12 +2030,13 @@
       }
 
       transitionRequested = false;
-      isCloseupEventActive = false;
+      activeVariationEventType = '';
       isTransitioning = true;
+      const nextEvent = pendingVariationEvent();
       await playVideo(
         variationVideo.reverse,
-        requestedCloseupVariation
-          ? requestedCloseupVariation.forward
+        nextEvent
+          ? nextEvent.forward
           : peekIdleClip('anchor', anchorIdleClips).src
       );
       isTransitioning = false;
@@ -1993,17 +2051,17 @@
       ];
 
       while (true) {
-        if (requestedCloseupVariation) {
-          const variationVideo = requestedCloseupVariation;
-          requestedCloseupVariation = null;
-          await playVariationEvent(variationVideo, anchorIdleClips, true);
+        const pendingEvent = takePendingVariationEvent();
+        if (pendingEvent) {
+          await playVariationEvent(pendingEvent.variationVideo, anchorIdleClips, pendingEvent.eventType);
           continue;
         }
 
         const anchorIdleClip = nextIdleClip('anchor', anchorIdleClips);
         const anchorCycleWillComplete = willCompleteIdleCycle('anchor');
-        const anchorNextSrc = requestedCloseupVariation
-          ? requestedCloseupVariation.forward
+        const nextEvent = pendingVariationEvent();
+        const anchorNextSrc = nextEvent
+          ? nextEvent.forward
           : anchorCycleWillComplete
           ? variationVideos[nextVariationIndex].forward
           : peekIdleClip('anchor', anchorIdleClips).src;
@@ -2016,10 +2074,13 @@
         }
 
         transitionRequested = false;
-        const isCloseupEvent = Boolean(requestedCloseupVariation);
-        const variationVideo = requestedCloseupVariation || nextVariation();
-        requestedCloseupVariation = null;
-        await playVariationEvent(variationVideo, anchorIdleClips, isCloseupEvent);
+        const requestedEvent = takePendingVariationEvent();
+        const variationVideo = requestedEvent ? requestedEvent.variationVideo : nextVariation();
+        await playVariationEvent(
+          variationVideo,
+          anchorIdleClips,
+          requestedEvent ? requestedEvent.eventType : ''
+        );
       }
     }
 
@@ -2109,7 +2170,7 @@
       if (isAnyBucketModalOpen()) {
         return;
       }
-      requestTransition();
+      requestCloseupVariation();
     });
   </script>
 </body>
