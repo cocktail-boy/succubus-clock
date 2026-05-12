@@ -1,10 +1,15 @@
-const CACHE_NAME = 'succubus-clock-videos-v15';
+const CACHE_NAME = 'succubus-clock-videos-v16';
 const MEDIA_PATHS = [
   '/video_outputs_seedance_1_5_pro_handbrake/anchor_variations/',
+  '/video_outputs_seedance_1_5_pro_handbrake/anchor_variations_diewithzero/',
   '/video_outputs_seedance_1_5_pro_handbrake/idle_animations/',
+  '/video_outputs_seedance_1_5_pro_handbrake/idle_animations_diewithzero/',
   '/video_outputs_seedance_1_5_pro_handbrake/idle_blink_animations/',
+  '/video_outputs_seedance_1_5_pro_handbrake/idle_blink_animations_diewithzero/',
   '/video_outputs_seedance_1_5_pro_handbrake/idle_look_forward/',
+  '/video_outputs_seedance_1_5_pro_handbrake/idle_look_forward_diewithzero/',
   '/video_outputs_seedance_1_5_pro_handbrake/idle_body_trace/',
+  '/video_outputs_seedance_1_5_pro_handbrake/idle_body_trace_diewithzero/',
   '/music/'
 ];
 const STATIC_ASSETS = [

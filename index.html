@@ -430,18 +430,27 @@
     ];
     const videoTrimSeconds = 1 / 24;
     const successfulVariations = [
-      'img_0001', 'img_0002', 'img_0003', 'img_0004', 'img_0005', 'img_0006',
-      'img_0007', 'img_0008', 'img_0009', 'img_0010', 'img_0011', 'img_0012',
-      'img_0013', 'img_0014', 'img_0015', 'img_0016', 'img_0017', 'img_0018'
+      { id: 'succubus_dwz_v01', subdir: '_diewithzero' },
+      { id: 'succubus_dwz_v02', subdir: '_diewithzero' },
+      { id: 'succubus_dwz_v03', subdir: '_diewithzero' },
+      { id: 'succubus_dwz_v04', subdir: '_diewithzero' },
+      { id: 'succubus_dwz_v05', subdir: '_diewithzero' },
+      { id: 'succubus_dwz_v06', subdir: '_diewithzero' },
+      { id: 'img_0001', subdir: '' }, { id: 'img_0002', subdir: '' }, { id: 'img_0003', subdir: '' },
+      { id: 'img_0004', subdir: '' }, { id: 'img_0005', subdir: '' }, { id: 'img_0006', subdir: '' },
+      { id: 'img_0007', subdir: '' }, { id: 'img_0008', subdir: '' }, { id: 'img_0009', subdir: '' },
+      { id: 'img_0010', subdir: '' }, { id: 'img_0011', subdir: '' }, { id: 'img_0012', subdir: '' },
+      { id: 'img_0013', subdir: '' }, { id: 'img_0014', subdir: '' }, { id: 'img_0015', subdir: '' },
+      { id: 'img_0016', subdir: '' }, { id: 'img_0017', subdir: '' }, { id: 'img_0018', subdir: '' }
     ];
-    const variationVideos = successfulVariations.map((variationId) => ({
-      id: variationId,
-      forward: `${transitionVideoBasePath}/${variationId}_anchor_to_variation_8s.mp4`,
-      idle: `${idleVideoBasePath}/${variationId}_idle_4s.mp4`,
-      blinkIdle: `${blinkIdleVideoBasePath}/${variationId}_idle_blink_4s.mp4`,
-      lookForwardIdle: `${lookForwardIdleVideoBasePath}/${variationId}_idle_look_forward_4s.mp4`,
-      bodyTraceIdle: `${bodyTraceIdleVideoBasePath}/${variationId}_idle_body_trace_4s.mp4`,
-      reverse: `${transitionVideoBasePath}/${variationId}_variation_to_anchor_4s.mp4`
+    const variationVideos = successfulVariations.map(({ id, subdir }) => ({
+      id,
+      forward: `${transitionVideoBasePath}${subdir}/${id}_anchor_to_variation_8s.mp4`,
+      idle: `${idleVideoBasePath}${subdir}/${id}_idle_4s.mp4`,
+      blinkIdle: `${blinkIdleVideoBasePath}${subdir}/${id}_idle_blink_4s.mp4`,
+      lookForwardIdle: `${lookForwardIdleVideoBasePath}${subdir}/${id}_idle_look_forward_4s.mp4`,
+      bodyTraceIdle: `${bodyTraceIdleVideoBasePath}${subdir}/${id}_idle_body_trace_4s.mp4`,
+      reverse: `${transitionVideoBasePath}${subdir}/${id}_variation_to_anchor_4s.mp4`
     }));
     let nextVariationIndex = 0;
     let activeVideo = anchorVideo;

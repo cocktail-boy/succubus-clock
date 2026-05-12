@@ -1,0 +1,144 @@
+================================================================
+SUCCUBUS x DIE WITH ZERO — 6 CONCEPT VARIATIONS
+================================================================
+
+WORKFLOW NOTE
+-------------
+Each variation below dramatizes one conceptual link between
+succubus mythology and the Die with Zero philosophy. Same identity
+anchor as the 20-variation set — paste the CHARACTER SHEET block
+verbatim into every prompt and (ideally) attach an approved anchor
+image as a reference so likeness is preserved while the scene and
+mood change. Do not paraphrase the character sheet — identical
+tokens across calls give the model the best chance at consistent
+identity.
+
+================================================================
+CHARACTER SHEET (paste verbatim into every prompt)
+================================================================
+
+Adult infernal queen, mid-twenties in apparent age. Heart-shaped
+face, high cheekbones, sharp half-lidded almond eyes with deep
+crimson irises, dark thick lashes, defined dark brows. Glossy
+cherry-red lips, full and slightly parted. Honey-warm porcelain
+skin with soft subsurface scattering, faint rose flush across
+cheeks and nose. Long straight raven-black hair to mid-back with
+a subtle inner sheen. Two elegant matte-black horns curving back
+from her temples, ridged like polished obsidian, roughly eight
+inches long. Slim black tail with a spaded tip. Broad bat wings
+with deep crimson membranes and black bone structure. Outfit:
+dark-crimson corset bralette with gold filigree across the bust
+panel, matching obsidian micro skirt with gold trim, slim black
+choker with a single ruby drop, gold filigree arm cuffs at the
+biceps. Painterly cinematic fantasy game key art style.
+
+================================================================
+VARIATION PROMPTS
+================================================================
+
+--- 01. The Life-Energy Moneylender ---
+Concept: life force as the actual currency. Money is stored life,
+and she is the one who knows the exchange rate.
+
+[CHARACTER SHEET] She sits behind a polished obsidian counting
+table inside a dim gothic counting-house, an open ledger before
+her and an ornate brass balance scale at her elbow. On one pan of
+the scale sits a neat stack of gold coins; on the other, a small
+hourglass whose sand glows like molten gold. She holds a single
+coin between thumb and forefinger, lifted near her cheek as she
+examines it with one eye, head tilted, a small amused smirk at
+her lips. Loose stacks of coins, rolled parchments, and a dripping
+candle clutter the table. Wings folded close, tail curled around
+the leg of her chair. Warm desk-candle key light, deep cathedral
+shadow behind, embers drifting in the dark, shallow depth of
+field, tack-sharp eyes, painterly cinematic detail.
+
+--- 02. The Empty Hourglass ---
+Concept: "die with zero" is literally what she does. Drained to
+nothing, presented as accomplishment rather than horror.
+
+[CHARACTER SHEET] She stands centered in a moonlit obsidian
+chamber, holding up a tall slender hourglass at eye level with
+both hands. The hourglass is completely empty — the last grain
+has just fallen — and she regards it with a soft, satisfied
+smile, head tilted slightly. Her expression is calm and pleased,
+not triumphant — the look of a quiet job well done. Wings folded
+relaxed behind her, tail at rest along the floor. A single shaft
+of cool moonlight from a high window illuminates the glass; warm
+rim light from a low brazier catches her cheekbone from the side.
+Embers drift slowly in the still air. Shallow depth of field,
+painterly realism, sharp catchlights in the eyes.
+
+--- 03. The Auditor of Unspent Years ---
+Concept: she's the responsible one — the indulgence is the
+correct path, and saving was the sin she's here to flag.
+
+[CHARACTER SHEET] She sits at a tall accountant's desk in a
+vaulted gothic library, an enormous open ledger spread before her,
+a quill poised in one hand. A pair of slim half-moon reading
+spectacles rests low on her nose. She looks up over the rims
+toward the viewer with a wry, slightly disapproving raised
+eyebrow, mouth set in a small flat line — the expression of
+someone reviewing a disappointing balance sheet. The ledger's
+facing pages are labeled in elegant script: "EXPERIENCES" on the
+left, "UNUSED YEARS" on the right, the right column heavy with
+tallies. Stacks of unstamped receipts pile beside her elbow.
+Wings folded primly, tail curled around the stool. Warm
+desk-lamp pool from above, cool ambient library fill, painterly
+detail, sharp eyes, shallow depth of field.
+
+--- 04. Bedside Visitor ---
+Concept: succubi strike during sleep — and the Die-with-Zero
+warning is that sleepwalking through your prime years is the
+actual loss.
+
+[CHARACTER SHEET] She sits on the edge of a wide canopy bed in a
+dim chamber where an unseen figure sleeps beneath heavy dark
+sheets (only the gentle curve of a blanket suggests them — no
+face shown, no body visible). She is turned three-quarters toward
+the viewer rather than toward the sleeper, holding a small ornate
+hourglass cupped in both palms, regarding it with a melancholy
+half-smile. Predawn blue light filters through tall arched
+windows behind her; a guttered candle on the nightstand has long
+since burned out, only the faintest ember left. Wings folded
+close against her back, tail draped quietly along the bedframe.
+Cool blue rim light from the window, last warm ember-glow from
+the candle stub, hushed atmosphere, painterly realism, shallow
+depth of field.
+
+--- 05. Vanitas with a Smile ---
+Concept: classic memento mori, but tender. Death as the thing
+that gives the present its weight, greeted as an old friend
+rather than feared.
+
+[CHARACTER SHEET] She sits at a small round table draped in deep
+velvet inside a candlelit alcove, a classical vanitas arrangement
+laid out before her: a polished ivory skull, an hourglass tipped
+on its side, a wilting deep-crimson rose with petals fallen
+across the cloth, and an extinguished black candle still warm.
+She cradles the skull gently in both hands, lifted near her face,
+regarding it with a soft tender smile — affectionate, almost
+fond, the way one greets a long-known friend. No predatory edge
+to the expression. Wings folded close, tail curled around the
+chair leg. Warm low candlelight from off-frame, deep velvet
+shadow behind, painterly Dutch-master chiaroscuro, shallow depth
+of field, sharp catchlights in the eyes.
+
+--- 06. The Clock-Keeper ---
+Concept: the unstated countdown made explicit — the succubus
+relationship always had a hidden clock; here she shows it to you.
+This is the cleanest visual tie to the app itself.
+
+[CHARACTER SHEET] She stands beside an enormous mechanical clock
+face set into the ruined cathedral wall, its black iron hands
+taller than she is, its numerals carved in glowing crimson
+sigils. She rests one gloved hand against the long minute hand
+with quiet authority, the other relaxed at her side. She turns
+her head toward the viewer with a calm direct gaze and a small
+knowing smile — the expression of someone showing you something
+you already half-suspected. The clock's heavy brass pendulum
+swings behind her, catching glints of light. Wings spread
+half-open like a dark banner across the clock face, tail curled
+at her heel. Warm ember underlight from below, cool moonlight
+from above through the broken ceiling, dramatic painterly
+composition, shallow depth of field, sharp eyes.
