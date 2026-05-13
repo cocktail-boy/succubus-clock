@@ -55,9 +55,10 @@ reserved.
 : Single pending DWZ event slot. `null` means no DWZ event is reserved.
 
 `activeVariationEventType`
-: Empty string for ambient events. Set to `closeup` or `dwz` only while that
-event is in its variation-idle phase. This lets repeated interactions exit the
-current event instead of queueing the next one.
+: Empty string for ambient events and during both transition clips. Set to
+`closeup` or `dwz` only while that event is in its variation-idle phase. This
+lets repeated interactions exit the current event instead of queueing the next
+one.
 
 `transitionRequested`
 : Asks the current idle loop to end and move to the next transition.
@@ -67,10 +68,30 @@ current event instead of queueing the next one.
 requests are ignored during this period.
 
 `idleClipQueues` and `idleClipPlayCounts`
-: Shuffle and count idle clips per anchor/variation id. Each id plays a
-four-idle cycle before automatically returning.
+: Shuffle and count idle clips per queue key. The anchor uses the literal key
+`'anchor'`; each variation uses its `id`. Each key plays a four-idle cycle
+before automatically returning.
+
+## Phase Table
+
+`isTransitioning` and `activeVariationEventType` together describe which phase
+the state machine is in. Request handlers branch on this pair.
+
+| Phase                       | `isTransitioning` | `activeVariationEventType` | Request behavior                               |
+| --------------------------- | ----------------- | -------------------------- | ---------------------------------------------- |
+| Anchor idle                 | false             | `''`                       | Reserves a new event and ends current idle     |
+| Forward transition          | true              | `''`                       | Ignored                                        |
+| Variation idle (same type)  | false             | `closeup` or `dwz`         | Requests return to anchor (no new reservation) |
+| Variation idle (other type) | false             | `closeup` or `dwz`         | Ignored                                        |
+| Reverse transition          | true              | `''`                       | Ignored                                        |
 
 ## Request Rules
+
+When a request "ends the current idle" or "requests return to anchor", it
+sets `transitionRequested = true` and calls `skipActiveClip()`, which fast-
+forwards the currently playing idle clip to its trim point so the next
+transition begins within a frame instead of waiting for the idle to end
+naturally.
 
 ### Close-up request
 
@@ -81,13 +102,13 @@ press.
 if transition clip is active:
   ignore
 else if current event type is closeup:
-  request return to anchor
+  request return to anchor (skipActiveClip)
 else if any event is active or pending:
   ignore
 else:
   reserve next close-up
   prefetch it
-  request current idle to end
+  request current idle to end (skipActiveClip)
 ```
 
 ### DWZ request
@@ -98,13 +119,13 @@ else:
 if transition clip is active:
   ignore
 else if current event type is dwz:
-  request return to anchor
+  request return to anchor (skipActiveClip)
 else if any event is active or pending:
   ignore
 else:
   reserve next DWZ event
   prefetch it
-  request current idle to end
+  request current idle to end (skipActiveClip)
 ```
 
 Close-up and DWZ requests intentionally do not stack. At most one event can be
@@ -155,8 +176,12 @@ clear activeVariationEventType
 play variation -> anchor transition
 ```
 
-If a pending event appears while returning to anchor, the reverse transition
-preloads that event's forward transition as the next source.
+If a pending event exists when the reverse transition starts, that event's
+forward transition is preloaded as the next source. In normal interaction flow
+this branch is unreachable: request rules refuse to reserve an event while
+another event is active, and the `isTransitioning` guard blocks requests
+during the reverse transition itself. The branch exists as defense in depth,
+parallel to the close-up-over-DWZ priority in `takePendingVariationEvent()`.
 
 ## Interaction Trigger Map
 
