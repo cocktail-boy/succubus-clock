@@ -1,0 +1,219 @@
+================================================================
+SUCCUBUS — 20 VARIATIONS
+================================================================
+
+WORKFLOW NOTE
+-------------
+For best identity consistency:
+1. Generate variation #01 first. Iterate on it until the face, horns,
+   hair, and outfit match your vision. This is your ANCHOR.
+2. For variations #02–20, attach the anchor image as a reference and
+   use the prompts below as edit instructions. gpt-image-2 will
+   preserve likeness while changing pose/expression/scene.
+3. If running text-only (no reference image), paste the CHARACTER
+   SHEET block into every prompt verbatim — do not paraphrase it.
+   Identical tokens across calls give the model the best chance at
+   consistent identity.
+
+================================================================
+CHARACTER SHEET (paste verbatim into every prompt)
+================================================================
+
+Adult infernal queen, mid-twenties in apparent age. Heart-shaped
+face, high cheekbones, sharp half-lidded almond eyes with deep
+crimson irises, dark thick lashes, defined dark brows. Glossy
+cherry-red lips, full and slightly parted. Honey-warm porcelain
+skin with soft subsurface scattering, faint rose flush across
+cheeks and nose. Long straight raven-black hair to mid-back with
+a subtle inner sheen. Two elegant matte-black horns curving back
+from her temples, ridged like polished obsidian, roughly eight
+inches long. Slim black tail with a spaded tip. Broad bat wings
+with deep crimson membranes and black bone structure. Outfit:
+dark-crimson corset bralette with gold filigree across the bust
+panel, matching obsidian micro skirt with gold trim, slim black
+choker with a single ruby drop, gold filigree arm cuffs at the
+biceps. Painterly cinematic fantasy game key art style.
+
+================================================================
+VARIATION PROMPTS
+================================================================
+
+--- 01. Anchor — Throne in Cathedral ---
+[CHARACTER SHEET] She sits upon a throne of fractured obsidian
+inside a ruined gothic cathedral, leaning forward with one elbow
+on her knee, the other hand resting on the armrest. Gaze tilted
+down toward the viewer, confident playful smirk. Wings spread
+wide behind the throne, tail curling at her feet. Floating
+obsidian shards, drifting embers, arcane sigils glowing in the
+vaulted darkness, lava bokeh below. Molten underglow, warm rim
+light, shallow depth of field, sharp eyes.
+
+--- 02. Standing Hero Pose, Three-Quarter View ---
+[CHARACTER SHEET] She stands at the center of the ruined cathedral
+nave in a confident three-quarter pose, weight on one leg, one
+hand on her hip, the other relaxed at her side. Wings half-spread
+behind her. She looks toward the viewer with a small knowing
+smile. Shafts of red light cut down from broken stained glass
+overhead. Warm rim light, cool ambient fill, shallow depth of
+field.
+
+--- 03. Walking Toward Viewer, Frontal ---
+[CHARACTER SHEET] Full-length frontal view of her walking
+unhurried toward the camera through a corridor of black stone
+columns. Wings folded loose behind her, tail flicking lazily.
+Confident amused expression, eyes locked on the viewer, faint
+smirk. Embers drift past in the air. Strong rim backlight from
+a doorway behind her, cool fill on the front.
+
+--- 04. Cowgirl Saddle Lean, Looking Back ---
+[CHARACTER SHEET] She sits astride a black infernal warhorse in a
+cowgirl rider pose, torso angled slightly away from the viewer as
+she twists back over one shoulder with a playful confident smirk.
+One gloved hand holds the reins low near the saddle horn, the
+other rests on her thigh. Wings folded close to keep the silhouette
+clean, tail draped along the horse's flank. Long raven hair trails
+behind her, horns sharp in profile. Ruined cathedral courtyard with
+embers and drifting ash. Warm lava bounce from below, cool moon rim
+on her face, shallow depth of field, painterly realism.
+
+--- 05. Close-Up Portrait, Direct Gaze ---
+[CHARACTER SHEET] Tight head-and-shoulders portrait, frontal,
+direct eye contact with the viewer. Calm intense expression, lips
+softly closed in a faint smirk. Horns clearly visible curving back
+from her temples. Out-of-focus cathedral darkness behind her with
+floating ember bokeh. Soft key light from camera left, warm rim
+from behind, shallow depth of field, tack-sharp eyes.
+
+--- 06. Profile Portrait ---
+[CHARACTER SHEET] Side profile portrait from the chest up. She
+gazes off-frame with a thoughtful expression, lips slightly
+parted. The full curve of her horn is silhouetted against the
+glow behind her. A single strand of hair falls across her cheek.
+Backlit by warm lava glow, cool blue rim from the front, painterly
+realism.
+
+--- 07. Reading a Tome ---
+[CHARACTER SHEET] She sits cross-legged on a stone step inside a
+forbidden library, an open ancient tome resting on her lap. Her
+head is tilted down toward the pages with a small pleased smile,
+one finger marking her place. Wings folded soft behind her, tail
+curling around the step. Candle pools light her face from below;
+arcane sigils float dimly off the pages. Cozy warm lighting,
+shallow depth of field.
+
+--- 08. Casting a Spell ---
+[CHARACTER SHEET] She stands mid-cast in the center of a glowing
+summoning circle on black marble. One arm raised, palm up, with
+crimson hellfire coiling above it; the other hand extended low.
+Hair and wings lifted by the magical updraft. Eyes bright with
+focus, lips parted in concentration. Red light bathes her face
+from above, deep cathedral shadow behind. Dynamic painterly
+lighting, embers everywhere.
+
+--- 09. Laughing ---
+[CHARACTER SHEET] Three-quarter view, head tipped slightly back,
+mid-laugh — eyes crinkled with genuine amusement, mouth open in
+a clear bright laugh, hand half-raised toward her face. Wings
+relaxed. She stands in the cathedral with sunset light spilling
+through a broken rose window behind her. Warm golden backlight,
+soft fill, shallow depth of field, candid feeling.
+
+--- 10. Reclining on a Chaise ---
+[CHARACTER SHEET] She reclines along an ornate black-and-crimson
+velvet chaise lounge, propped on one elbow, legs crossed at the
+ankle. She looks toward the viewer with a lazy amused expression,
+chin resting on her knuckles. Wings draped over the back of the
+chaise. A goblet of red wine sits on a low table beside her.
+Warm candlelight from the side, cool ambient fill, painterly
+elegance.
+
+--- 11. Mid-Flight, Low Angle ---
+[CHARACTER SHEET] Low-angle shot looking up as she hovers in
+mid-air above the camera, wings fully spread and downbeat
+catching the light, body angled slightly forward, one hand
+extended down. She looks down toward the viewer with a fierce
+amused smile. Stormy red sky behind her, embers swirling around
+her form. Strong backlit silhouette with rim light tracing her
+wings.
+
+--- 12. Stained Glass Window Behind ---
+[CHARACTER SHEET] Frontal three-quarter view, she stands directly
+in front of an enormous backlit stained glass window depicting
+infernal iconography. The colored light scatters across her skin
+and outfit. Wings folded close behind her, hands clasped loose
+in front. Serene almost-regal expression, faint smile. Strong
+backlight, soft scattered color, painterly cathedral atmosphere.
+
+--- 13. Crouched on a Gargoyle ---
+[CHARACTER SHEET] She crouches in a balanced predator pose atop
+a gothic gargoyle high above a ruined city at night. One hand
+braced on the stone, the other resting on her knee. Wings folded
+tight, tail extended for balance behind her. She looks down past
+the camera with a sharp focused half-smile, eyes bright. City
+lights and a bleeding red moon below. Cold moonlight from above,
+warm city glow from below.
+
+--- 14. Holding a Rose ---
+[CHARACTER SHEET] Bust-up portrait. She holds a single deep-red
+rose lifted near her face, its petals just brushing her lower lip.
+Eyes tilted up toward the viewer through her lashes, a small
+amused smile playing at her mouth. Out-of-focus candles glow in
+the background. Soft warm key light, deep velvet shadows,
+romantic gothic mood, shallow depth of field.
+
+--- 15. Dancing Step ---
+[CHARACTER SHEET] Three-quarter dynamic dancing pose, mid-step,
+skirt and hair swirling with motion, one arm raised gracefully
+overhead, the other extended to the side. Wings flared half-open
+for balance. Bright delighted smile, eyes half-closed in
+enjoyment. She dances on a polished obsidian floor with embers
+spiraling around her like fireflies. Warm spotlight from above,
+cool blue floor reflection.
+
+--- 16. Cowgirl Gallop, Lasso Raised ---
+[CHARACTER SHEET] Dynamic action shot: she rides at full gallop
+across a volcanic plain in a commanding cowgirl pose, body lifted
+slightly from the saddle, one arm raised high spinning a glowing
+infernal lasso overhead while the other hand pulls the reins tight.
+Wings flared half-open for balance, tail streaming behind with the
+horse's motion. Fierce amused smile, eyes locked toward the viewer.
+Sparks and ember trails kick up from the hooves, distant obsidian
+arches in bokeh. Strong sunset backlight, warm underglow from lava
+cracks, cool fill on the front, cinematic shallow depth of field.
+
+--- 17. Sitting on Stairs, Casual ---
+[CHARACTER SHEET] She sits relaxed on a wide flight of black
+marble cathedral stairs, one knee pulled up, arms loose around
+it, the other leg stretched down a step. Wings folded soft, tail
+curled around her hip. Looking toward the camera with a calm,
+friendly smile and gentle eye contact, head tilted slightly.
+Maintain tasteful fantasy styling and a clean editorial portrait
+feel. Candlelight pools warm around her, shallow depth of field,
+intimate quiet mood.
+
+--- 18. Drinking from a Goblet ---
+[CHARACTER SHEET] Bust-up shot. She raises an ornate gold goblet
+to her lips, eyes lifted over its rim toward the viewer with a
+sly amused look, faintest smirk visible past the metal. One
+finger curled along the goblet's stem. Warm firelight from below,
+shadowed cathedral behind her, shallow depth of field, sharp
+eyes.
+
+--- 19. Heroic Wide Shot, Cowgirl at Cliff Edge ---
+[CHARACTER SHEET] Wide cinematic shot: she sits tall on horseback
+at the edge of a high obsidian cliff, full rider-and-horse figure
+small in the lower third while a vast crimson hellscape stretches
+to the horizon. Three-quarter angle toward the camera, one hand on
+the reins, the other resting near the saddle horn in relaxed
+command. Wings spread wide behind her like a dark banner, calm
+sovereign expression with a faint knowing smile. Massive scale,
+dramatic backlit sunset, atmospheric haze, painterly realism.
+
+--- 20. Soft Smile, Looking Up ---
+[CHARACTER SHEET] Bust-up portrait, slightly low angle. She
+looks upward and slightly off-frame with a soft genuine smile,
+expression unexpectedly tender — not seductive, simply pleased
+by something out of view. Hands clasped loose at her chest.
+Warm golden light catches her face from above, cathedral shadow
+behind. Soft painterly mood, shallow depth of field, sharp
+catchlights in the eyes.
