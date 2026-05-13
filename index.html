@@ -832,6 +832,13 @@
     ];
     const variationVideos = buildVariationVideos(successfulVariations);
     const dwzVariationVideos = buildVariationVideos(dwzVariations);
+    const cuteBranchVideoRoot = 'video_outputs_seedance_2_0_handbrake';
+    const cuteBranchTransitionPath = `${cuteBranchVideoRoot}/regular_cute_concept_transitions`;
+    const cuteBranchVideosById = new Map(successfulVariations.map(({ id }) => [id, {
+      id,
+      forward: `${cuteBranchTransitionPath}/${id}_regular_to_cute_concept_4s.mp4`,
+      reverse: `${cuteBranchTransitionPath}/${id}_cute_concept_to_regular_4s.mp4`
+    }]));
     const closeupVariationVideos = Array.from({ length: 10 }, (_item, index) => {
       const id = `succubus_closeup_v${String(index + 1).padStart(2, '0')}`;
       const subdir = '_closeup_seduction';
@@ -850,6 +857,8 @@
     let nextCloseupVariationIndex = 0;
     let requestedDwzVariation = null;
     let requestedCloseupVariation = null;
+    let requestedCuteBranch = null;
+    let currentAmbientVariation = null;
     let activeVideo = anchorVideo;
     let inactiveVideo = bufferVideo;
     let transitionRequested = false;
@@ -1774,6 +1783,10 @@
       ].map(prefetchVideo));
     }
 
+    function prefetchCuteBranch(cuteBranch) {
+      return Promise.allSettled([cuteBranch.forward, cuteBranch.reverse].map(prefetchVideo));
+    }
+
     function prefetchNextTransition() {
       return prefetchVideo(variationVideos[nextVariationIndex].forward).catch(() => {});
     }
@@ -1844,7 +1857,12 @@
         return;
       }
 
-      if (activeVariationEventType || pendingVariationEvent()) {
+      if (currentAmbientVariation) {
+        requestCuteBranch();
+        return;
+      }
+
+      if (activeVariationEventType || pendingVariationEvent() || requestedCuteBranch) {
         return;
       }
 
@@ -1852,6 +1870,25 @@
       requestedCloseupVariation = closeupVariation;
       prefetchVariation(closeupVariation);
       transitionRequested = true;
+      skipActiveClip();
+    }
+
+    function requestCuteBranch() {
+      if (isTransitioning) {
+        return;
+      }
+
+      if (requestedCuteBranch || pendingVariationEvent() || !currentAmbientVariation) {
+        return;
+      }
+
+      const cuteBranch = cuteBranchVideosById.get(currentAmbientVariation.id);
+      if (!cuteBranch) {
+        return;
+      }
+
+      requestedCuteBranch = cuteBranch;
+      prefetchCuteBranch(cuteBranch);
       skipActiveClip();
     }
 
@@ -1866,7 +1903,7 @@
         return;
       }
 
-      if (activeVariationEventType || pendingVariationEvent()) {
+      if (activeVariationEventType || pendingVariationEvent() || requestedCuteBranch) {
         return;
       }
 
@@ -2015,8 +2052,28 @@
       );
       isTransitioning = false;
       activeVariationEventType = eventType;
+      if (eventType === '') {
+        currentAmbientVariation = variationVideo;
+        const cuteBranchForVariation = cuteBranchVideosById.get(variationVideo.id);
+        if (cuteBranchForVariation) {
+          prefetchCuteBranch(cuteBranchForVariation);
+        }
+      }
 
       while (!transitionRequested && !pendingVariationEvent()) {
+        if (eventType === '' && requestedCuteBranch) {
+          const cuteBranch = requestedCuteBranch;
+          requestedCuteBranch = null;
+          isTransitioning = true;
+          await playVideo(cuteBranch.forward, cuteBranch.reverse);
+          await playVideo(
+            cuteBranch.reverse,
+            peekIdleClip(variationVideo.id, variationIdleClips).src
+          );
+          isTransitioning = false;
+          continue;
+        }
+
         const variationIdleClip = nextIdleClip(variationVideo.id, variationIdleClips);
         const variationCycleWillComplete = willCompleteIdleCycle(variationVideo.id);
         const variationNextSrc = variationCycleWillComplete
@@ -2024,11 +2081,14 @@
           : peekIdleClip(variationVideo.id, variationIdleClips).src;
 
         await playVideo(variationIdleClip.src, variationNextSrc);
-        if (countIdleClipPlay(variationVideo.id)) {
+        if (countIdleClipPlay(variationVideo.id) && !requestedCuteBranch) {
           transitionRequested = true;
         }
       }
 
+      if (eventType === '') {
+        currentAmbientVariation = null;
+      }
       transitionRequested = false;
       activeVariationEventType = '';
       isTransitioning = true;
