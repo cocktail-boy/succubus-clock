@@ -30,6 +30,19 @@
       container-name: stage;
     }
 
+    .title-banner {
+      position: absolute;
+      top: clamp(6px, 1.8cqw, 18px);
+      left: 50%;
+      z-index: 2;
+      width: min(88cqw, 468px);
+      max-height: clamp(94px, 23cqw, 172px);
+      object-fit: contain;
+      pointer-events: none;
+      transform: translateX(-50%);
+      filter: drop-shadow(0 3px 12px rgba(0, 0, 0, 0.72));
+    }
+
     .countdown-panel {
       position: absolute;
       top: 50%;
@@ -245,17 +258,17 @@
       display: inline-flex;
       align-items: center;
       justify-content: center;
-      gap: 6px;
-      min-width: 96px;
-      height: 40px;
-      padding: 0 12px;
+      gap: 4px;
+      min-width: 72px;
+      height: 30px;
+      padding: 0 8px;
       border: 1px solid rgba(244, 241, 234, 0.5);
       border-radius: 999px;
       background: rgba(16, 16, 20, 0.72);
       color: #f4f1ea;
       cursor: pointer;
-      font: 700 12px/1 Arial, Helvetica, sans-serif;
-      letter-spacing: 0.08em;
+      font: 700 10px/1 Arial, Helvetica, sans-serif;
+      letter-spacing: 0.06em;
       line-height: 1;
       text-transform: uppercase;
       text-shadow: 0 2px 8px rgba(0, 0, 0, 0.75);
@@ -271,21 +284,21 @@
     }
 
     .audio-toggle-icon {
-      font-size: 16px;
+      font-size: 13px;
       letter-spacing: 0;
       line-height: 1;
     }
 
     .audio-toggle-transport {
-      min-width: 12px;
-      font-size: 14px;
+      min-width: 10px;
+      font-size: 11px;
       letter-spacing: 0;
       line-height: 1;
       text-align: center;
     }
 
     .audio-toggle-state {
-      min-width: 28px;
+      min-width: 22px;
       text-align: left;
     }
 
@@ -684,6 +697,7 @@
 </head>
 <body>
   <main class="image-stage">
+    <img class="title-banner" src="title_images/title_banner.png" alt="Die with Zero">
     <div class="countdown-panel is-unset" id="countdownPanel" aria-live="polite" aria-label="Time remaining" tabindex="0">
       <div class="countdown-grid">
         <div class="countdown-unit">
