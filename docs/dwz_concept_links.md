@@ -1,6 +1,6 @@
 # Die with Zero × Succubus — conceptual links
 
-The succubus-clock app pivoted to a Die with Zero life countdown. These are the conceptual threads connecting the two archetypes — the rationale behind the dwz variation set (see `succubus_diewithzero_variations.txt` for the matching image prompts).
+The succubus-clock app pivoted to a Die with Zero life countdown. These are the conceptual threads connecting the two archetypes — the rationale behind the dwz variation set (see `asset-gen/succubus_diewithzero_variations.txt` for the matching image prompts).
 
 ---
 

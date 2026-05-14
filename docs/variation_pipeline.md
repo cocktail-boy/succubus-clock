@@ -2,13 +2,13 @@
 
 Reference for adding a new set of succubus variations end-to-end. The dwz set is the canonical recent example; substitute your own set name (e.g. `dwz`, `seasonal`) anywhere `dwz` appears.
 
-The flow has four phases. Each phase has a script in the project root.
+The flow has four phases. Each phase has a script in `asset-gen/`.
 
 ---
 
 ## Phase 1 — Image prompts (text file)
 
-Format: a single text file at the project root with two sections delimited by 64-`=` rule lines:
+Format: a single text file in `asset-gen/` with two sections delimited by 64-`=` rule lines:
 
 1. `CHARACTER SHEET (paste verbatim into every prompt)` — describes the consistent identity (face, horns, outfit, wings) so every variation looks like the same character.
 2. `VARIATION PROMPTS` — numbered `--- NN. Title ---` blocks. Each body contains the literal token `[CHARACTER SHEET]`, which the generator script substitutes before sending to the API.
@@ -23,7 +23,7 @@ Style note (saved in memory): no smoke in prompts — embers only. Past glyph ru
 
 ## Phase 2 — GPT Image 2 generation
 
-Script: `gpt_image_2_edit_dwz_variations.py`
+Script: `asset-gen/gpt_image_2_edit_dwz_variations.py`
 
 - Model: `openai/gpt-image-2/edit`
 - Anchor: `succubus_anchor_01_4x4/anchor.png` (passed as `image_urls[0]` reference)
@@ -36,7 +36,7 @@ Manual step after generation:
 2. Copy picks into a flat `variations_diewithzero/` folder at project root.
 3. Drop the `_MM` sub-index from filenames so they end at `succubus_dwz_vNN.png`. The downstream seedance scripts glob this folder.
 
-Run: `python gpt_image_2_edit_dwz_variations.py`
+Run from project root: `python asset-gen/gpt_image_2_edit_dwz_variations.py`
 
 ---
 
@@ -45,7 +45,7 @@ Run: `python gpt_image_2_edit_dwz_variations.py`
 Two scripts run sequentially, both reading from `variations_diewithzero/`:
 
 ### 3a. Anchor ↔ variation transitions
-Script: `async_seedance_1_5_pro_dwz_variations_i2v.py`
+Script: `asset-gen/async_seedance_1_5_pro_dwz_variations_i2v.py`
 
 For every PNG in `variations_diewithzero/`, generates two clips:
 - **Forward** (anchor → variation, 8s) — `succubus_dwz_vNN_anchor_to_variation_8s.mp4`
@@ -54,7 +54,7 @@ For every PNG in `variations_diewithzero/`, generates two clips:
 Output: `video_outputs_seedance_1_5_pro/anchor_variations_diewithzero/`
 
 ### 3b. Idle prompt sets
-Script: `async_seedance_1_5_pro_dwz_idle_prompt_sets_i2v.py`
+Script: `asset-gen/async_seedance_1_5_pro_dwz_idle_prompt_sets_i2v.py`
 
 For every variation PNG (anchor excluded — its idles already exist from the original run), generates 4 idle types × 4 seconds each:
 - `idle_animations_diewithzero/` — regular subtle idle
@@ -65,7 +65,7 @@ For every variation PNG (anchor excluded — its idles already exist from the or
 Filename pattern: `succubus_dwz_vNN_<suffix>_4s.mp4` per variation per set.
 
 ### 3c. HandBrake compression
-Run: `.\compress_videos_handbrake.ps1`
+Run from project root: `.\asset-gen\compress_videos_handbrake.ps1`
 
 The PS1 walks `video_outputs_seedance_1_5_pro/` recursively and writes to `video_outputs_seedance_1_5_pro_handbrake/` with the same subdir structure. Settings: x264 medium, quality 28, 24fps CFR, audio stripped. Typical savings: ~88%. Already-compressed files are skipped without `-Force`.
 
@@ -110,6 +110,6 @@ video_outputs_seedance_1_5_pro_handbrake/<subdir>/*
 !video_outputs_seedance_1_5_pro_handbrake/<subdir>/*.mp4
 ```
 
-Source scripts and the prompts text file also need `!script_name.py` entries to be tracked.
+New scripts (`*.py`, `*.ps1`) and prompt text files (`*.txt`) placed under `asset-gen/` are tracked automatically by the existing `!asset-gen/*.py` / `*.ps1` / `*.txt` allowlist — no per-file `.gitignore` entry needed.
 
 Then stage and commit: scripts + prompts file + index/sw changes + all `.mp4`s under each new subdir.

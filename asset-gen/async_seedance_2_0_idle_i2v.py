@@ -19,7 +19,7 @@ MODEL = "bytedance/seedance-2.0/fast/image-to-video"
 
 ANCHOR_IMAGE = Path("succubus_anchor_01_4x4") / "anchor.png"
 VARIATIONS_DIR = Path("variations")
-SUCCESSFUL_VARIATIONS_FILE = Path("successful_variations.txt")
+SUCCESSFUL_VARIATIONS_FILE = Path(__file__).resolve().parent / "successful_variations.txt"
 OUTPUT_DIR = Path("video_outputs_seedance_2_0") / "idle_animations"
 
 PROMPT = (
