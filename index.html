@@ -257,13 +257,16 @@
       top: 16px;
       right: 16px;
       z-index: 2;
-      display: inline-flex;
+      display: inline-grid;
+      grid-template-columns: auto auto;
+      grid-template-rows: auto auto;
       align-items: center;
       justify-content: center;
-      gap: 4px;
-      min-width: 72px;
-      height: 30px;
-      padding: 0 8px;
+      column-gap: 4px;
+      row-gap: 2px;
+      min-width: 52px;
+      height: 38px;
+      padding: 4px 7px;
       border: 1px solid rgba(244, 241, 234, 0.5);
       border-radius: 999px;
       background: rgba(16, 16, 20, 0.72);
@@ -300,13 +303,20 @@
     }
 
     .audio-toggle-state {
-      min-width: 22px;
-      text-align: left;
+      min-width: 0;
+      text-align: center;
     }
 
     .audio-toggle:focus-visible {
       outline: 2px solid #f4f1ea;
       outline-offset: 4px;
+    }
+
+    @container stage (max-width: 520px) {
+      .audio-toggle {
+        top: clamp(90px, 25cqw, 124px);
+        right: 10px;
+      }
     }
 
     img,
