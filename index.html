@@ -242,17 +242,51 @@
       top: 16px;
       right: 16px;
       z-index: 2;
-      display: grid;
-      place-items: center;
-      width: 40px;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 6px;
+      min-width: 96px;
       height: 40px;
+      padding: 0 12px;
       border: 1px solid rgba(244, 241, 234, 0.5);
-      border-radius: 50%;
+      border-radius: 999px;
       background: rgba(16, 16, 20, 0.72);
       color: #f4f1ea;
       cursor: pointer;
-      font-size: 18px;
+      font: 700 12px/1 Arial, Helvetica, sans-serif;
+      letter-spacing: 0.08em;
       line-height: 1;
+      text-transform: uppercase;
+      text-shadow: 0 2px 8px rgba(0, 0, 0, 0.75);
+    }
+
+    .audio-toggle:hover {
+      background: rgba(16, 16, 20, 0.86);
+    }
+
+    .audio-toggle.is-playing {
+      border-color: rgba(255, 190, 214, 0.85);
+      background: rgba(78, 25, 45, 0.8);
+    }
+
+    .audio-toggle-icon {
+      font-size: 16px;
+      letter-spacing: 0;
+      line-height: 1;
+    }
+
+    .audio-toggle-transport {
+      min-width: 12px;
+      font-size: 14px;
+      letter-spacing: 0;
+      line-height: 1;
+      text-align: center;
+    }
+
+    .audio-toggle-state {
+      min-width: 28px;
+      text-align: left;
     }
 
     .audio-toggle:focus-visible {
@@ -704,7 +738,12 @@
       type="button"
       aria-label="Play background music"
       title="Play background music"
-    >&#9654;</button>
+    >
+      <span class="audio-toggle-icon" aria-hidden="true">&#9835;</span>
+      <span aria-hidden="true">BGM</span>
+      <span class="audio-toggle-transport" id="audioToggleTransport" aria-hidden="true">&#9654;</span>
+      <span class="audio-toggle-state" id="audioToggleState" aria-hidden="true">Play</span>
+    </button>
     <div class="bottom-stack">
       <div class="decade-strip" id="decadeStrip" hidden></div>
       <form class="lastday-form" id="lastdayForm" autocomplete="off">
@@ -799,6 +838,8 @@
     const anchorVideo = document.getElementById('anchorVideo');
     const bufferVideo = document.getElementById('bufferVideo');
     const audioToggle = document.getElementById('audioToggle');
+    const audioToggleTransport = document.getElementById('audioToggleTransport');
+    const audioToggleState = document.getElementById('audioToggleState');
     const videoRootPath = 'video_outputs_seedance_1_5_pro_handbrake';
     const transitionVideoBasePath = `${videoRootPath}/anchor_variations`;
     const idleVideoBasePath = `${videoRootPath}/idle_animations`;
@@ -1950,7 +1991,9 @@
 
     function updateAudioToggle() {
       const isPlaying = bgmStarted && !bgmAudio.paused;
-      audioToggle.textContent = isPlaying ? '⏹' : '▶';
+      audioToggle.classList.toggle('is-playing', isPlaying);
+      audioToggleTransport.textContent = isPlaying ? '⏹' : '▶';
+      audioToggleState.textContent = isPlaying ? 'Stop' : 'Play';
       audioToggle.setAttribute(
         'aria-label',
         isPlaying ? 'Stop background music' : 'Play background music'
